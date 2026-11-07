@@ -1,10 +1,11 @@
 package com.weapon.simulator
 
+import android.content.Context
+import android.media.AudioAttributes
+import android.media.SoundPool
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -19,7 +20,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -27,7 +27,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material3.Card
@@ -42,6 +41,7 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -51,6 +51,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -99,6 +100,96 @@ private val items = listOf(
     "Shaving Foam", "Comb", "Barber Brush"
 ).map { SimItem(it, Section.Barber, if (it == "Scissors") "Scissors" else "Clippers") }
 
+/**
+ * SoundPool controller for short offline SFX.
+ * Every catalog item receives a local raw resource. If the catalog has fewer
+ * dedicated files than items, the closest category pool is reused round-robin.
+ */
+private class ItemSoundController(context: Context, catalog: List<SimItem>) {
+    private val soundPool: SoundPool
+    private val sampleByItem = mutableMapOf<String, Int>()
+    private val sampleByResource = mutableMapOf<Int, Int>()
+    private val loadedSamples = mutableSetOf<Int>()
+    private var activeStreamId = 0
+
+    init {
+        val attributes = AudioAttributes.Builder()
+            .setUsage(AudioAttributes.USAGE_GAME)
+            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+            .build()
+        soundPool = SoundPool.Builder()
+            .setAudioAttributes(attributes)
+            .setMaxStreams(1)
+            .build()
+        soundPool.setOnLoadCompleteListener { _, sampleId, status ->
+            if (status == 0) loadedSamples += sampleId
+        }
+
+        val weaponSounds = listOf(
+            R.raw.weapons_mixkit_2782, R.raw.weapons_mixkit_1660, R.raw.weapons_mixkit_1662,
+            R.raw.weapons_mixkit_2804, R.raw.weapons_mixkit_2779, R.raw.weapons_mixkit_2780,
+            R.raw.weapons_mixkit_1693, R.raw.weapons_mixkit_1666, R.raw.weapons_mixkit_1670,
+            R.raw.weapons_mixkit_2777, R.raw.weapons_mixkit_2784, R.raw.weapons_mixkit_1674,
+            R.raw.weapons_mixkit_2778, R.raw.weapons_mixkit_1681, R.raw.weapons_mixkit_1668,
+            R.raw.weapons_mixkit_1679, R.raw.weapons_mixkit_2783, R.raw.weapons_mixkit_1665,
+            R.raw.weapons_mixkit_1678, R.raw.weapons_mixkit_1659, R.raw.weapons_mixkit_1664,
+            R.raw.weapons_mixkit_1680, R.raw.weapons_mixkit_223
+        )
+        val energySounds = listOf(
+            R.raw.energy_mixkit_2595, R.raw.energy_mixkit_2594, R.raw.energy_mixkit_2596,
+            R.raw.energy_mixkit_2599, R.raw.energy_mixkit_2365, R.raw.energy_mixkit_2603,
+            R.raw.energy_mixkit_1377, R.raw.energy_mixkit_3201, R.raw.energy_mixkit_1455,
+            R.raw.energy_mixkit_2614, R.raw.energy_mixkit_1811, R.raw.energy_mixkit_1808,
+            R.raw.energy_mixkit_2969, R.raw.energy_mixkit_2597, R.raw.energy_mixkit_2967,
+            R.raw.energy_mixkit_1453, R.raw.energy_mixkit_1054, R.raw.energy_mixkit_2340,
+            R.raw.energy_mixkit_2966, R.raw.energy_mixkit_2646, R.raw.energy_mixkit_2968,
+            R.raw.energy_mixkit_1814, R.raw.energy_mixkit_3032, R.raw.energy_mixkit_2961
+        )
+        val barberSounds = listOf(
+            R.raw.barber_mixkit_2378, R.raw.barber_mixkit_1894, R.raw.barber_mixkit_1895
+        )
+        val resourcesBySection = mapOf(
+            Section.Weapons to weaponSounds,
+            Section.Energy to energySounds,
+            Section.Barber to barberSounds
+        )
+        resourcesBySection.values.flatten().forEach { resourceId ->
+            if (resourceId !in sampleByResource) {
+                sampleByResource[resourceId] = soundPool.load(context, resourceId, 1)
+            }
+        }
+        Section.entries.forEach { section ->
+            val sectionItems = catalog.filter { it.section == section }
+            val resources = resourcesBySection.getValue(section)
+            sectionItems.forEachIndexed { index, item ->
+                val resourceId = resources[index % resources.size]
+                sampleByItem[item.name] = resourceId
+            }
+        }
+    }
+
+    fun play(item: SimItem): Int {
+        stop()
+        val resourceId = sampleByItem[item.name] ?: return 0
+        val sampleId = sampleByResource[resourceId] ?: return 0
+        if (sampleId == 0 || sampleId !in loadedSamples) return 0
+        activeStreamId = soundPool.play(sampleId, 1f, 1f, 1, -1, 1f)
+        return activeStreamId
+    }
+
+    fun stop(streamId: Int = activeStreamId) {
+        if (streamId != 0) soundPool.stop(streamId)
+        if (streamId == activeStreamId) activeStreamId = 0
+    }
+
+    fun release() {
+        stop()
+        soundPool.release()
+        loadedSamples.clear()
+    }
+
+}
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -108,6 +199,9 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 private fun WeaponSimulatorApp() {
+    val context = LocalContext.current
+    val soundController = remember(context) { ItemSoundController(context, items) }
+    DisposableEffect(soundController) { onDispose { soundController.release() } }
     var selectedSection by remember { mutableStateOf<Section?>(null) }
     var showSettings by remember { mutableStateOf(false) }
     var showFavorites by remember { mutableStateOf(false) }
@@ -119,8 +213,8 @@ private fun WeaponSimulatorApp() {
         Surface(modifier = Modifier.fillMaxSize(), color = Background) {
             when {
                 showSettings -> SettingsScreen(safeMode, { safeMode = it }, flashStrength, { flashStrength = it }, { showSettings = false })
-                showFavorites -> ItemGridScreen("Favorites", null, items.filter { it.name in favorites }, favorites, { favorites = toggle(favorites, it) }, { showFavorites = false })
-                selectedSection != null -> ItemGridScreen(selectedSection!!.title, selectedSection, items.filter { it.section == selectedSection }, favorites, { favorites = toggle(favorites, it) }, { selectedSection = null })
+                showFavorites -> ItemGridScreen("Favorites", null, items.filter { it.name in favorites }, favorites, { favorites = toggle(favorites, it) }, soundController) { showFavorites = false }
+                selectedSection != null -> ItemGridScreen(selectedSection!!.title, selectedSection, items.filter { it.section == selectedSection }, favorites, { favorites = toggle(favorites, it) }, soundController) { selectedSection = null }
                 else -> HomeScreen(onSection = { selectedSection = it }, onFavorites = { showFavorites = true }, onSettings = { showSettings = true })
             }
         }
@@ -155,15 +249,33 @@ private fun HomeCard(title: String, subtitle: String, accent: Color, onClick: ()
 }
 
 @Composable
-private fun ItemGridScreen(title: String, section: Section?, data: List<SimItem>, favorites: Set<String>, onFavorite: (String) -> Unit, onBack: () -> Unit) {
+private fun ItemGridScreen(
+    title: String,
+    section: Section?,
+    data: List<SimItem>,
+    favorites: Set<String>,
+    onFavorite: (String) -> Unit,
+    soundController: ItemSoundController,
+    onBack: () -> Unit
+) {
     var activeItem by remember { mutableStateOf<String?>(null) }
+    DisposableEffect(Unit) { onDispose { soundController.stop() } }
     Column(Modifier.fillMaxSize()) {
         Row(Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically) { OutlinedButton(onClick = onBack) { Text("Back") }; Spacer(Modifier.width(12.dp)); Text(title, color = Color.White, fontSize = 22.sp, fontWeight = FontWeight.Bold) }
         LazyVerticalGrid(columns = GridCells.Adaptive(150.dp), modifier = Modifier.fillMaxSize().padding(horizontal = 12.dp), verticalArrangement = Arrangement.spacedBy(12.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             items(data) { item ->
                 val accent = section?.accent ?: item.section.accent
                 val pressed = activeItem == item.name
-                Card(modifier = Modifier.pointerInput(item.name) { detectTapGestures(onPress = { activeItem = item.name; try { awaitRelease() } finally { activeItem = null } }) }, colors = CardDefaults.cardColors(containerColor = if (pressed) accent.copy(alpha = .28f) else Panel), shape = RoundedCornerShape(18.dp)) {
+                Card(modifier = Modifier.pointerInput(item.name) {
+                    detectTapGestures(onPress = {
+                        activeItem = item.name
+                        val streamId = soundController.play(item)
+                        try { awaitRelease() } finally {
+                            soundController.stop(streamId)
+                            activeItem = null
+                        }
+                    })
+                }, colors = CardDefaults.cardColors(containerColor = if (pressed) accent.copy(alpha = .28f) else Panel), shape = RoundedCornerShape(18.dp)) {
                     Column(Modifier.padding(12.dp)) {
                         Box(Modifier.fillMaxWidth().height(105.dp).background(Brush.radialGradient(listOf(accent.copy(alpha = .40f), Color.Transparent)), RoundedCornerShape(14.dp)), contentAlignment = Alignment.Center) { Icon(Icons.Default.VolumeUp, null, tint = accent, modifier = Modifier.size(40.dp)) }
                         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) { Text(item.name, color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f)); IconButton(onClick = { onFavorite(item.name) }) { Icon(if (item.name in favorites) Icons.Default.Favorite else Icons.Default.FavoriteBorder, "Favorite", tint = if (item.name in favorites) Red else Color.Gray) } }
@@ -181,6 +293,6 @@ private fun SettingsScreen(safeMode: Boolean, onSafeMode: (Boolean) -> Unit, str
         OutlinedButton(onClick = onBack) { Text("Back") }; Spacer(Modifier.height(20.dp)); Text("Settings", color = Color.White, fontSize = 26.sp, fontWeight = FontWeight.Bold); Spacer(Modifier.height(20.dp))
         Text("Flash intensity", color = Color.White); Slider(value = strength, onValueChange = onStrength); Text("Safe mode reduces rapid screen flashes", color = Color.Gray)
         Row(Modifier.fillMaxWidth().padding(top = 20.dp), horizontalArrangement = Arrangement.SpaceBetween) { Text("Safe effects mode", color = Color.White); androidx.compose.material3.Switch(checked = safeMode, onCheckedChange = onSafeMode) }
-        Spacer(Modifier.height(30.dp)); Text("Language: Arabic / English", color = Color.White); Text("Sound, vibration and external LED controls are reserved for the interaction layer.", color = Color.Gray, modifier = Modifier.padding(top = 8.dp))
+        Spacer(Modifier.height(30.dp)); Text("Language: Arabic / English", color = Color.White); Text("SoundPool is active for offline press-and-hold effects.", color = Color.Gray, modifier = Modifier.padding(top = 8.dp))
     }
 }
