@@ -90,7 +90,7 @@ private val items = listOf(
     "Titanium Clipper", "Gold Master", "Chrome Master", "Carbon Fiber Clipper", "Neon Clipper", "Cyber Trimmer",
     "Turbo Clipper", "Ultimate Clipper", "Scissors", "Electric Shaver", "Hair Dryer", "Spray Bottle",
     "Shaving Foam", "Comb", "Barber Brush"
-).map { SimItem(it, Section.Barber, if (it == "Scissors") "Scissors" else "Clippers") })
+).map { SimItem(it, Section.Barber, if (it == "Scissors") "Scissors" else "Clippers") }
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
