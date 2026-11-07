@@ -62,9 +62,16 @@ private val Red = Color(0xFFFF334F)
 private val Blue = Color(0xFF37B9FF)
 private val Purple = Color(0xFFB65CFF)
 
-internal enum class Section(val title: String, val accent: Color) {
-    Weapons("Weapons", Red), Energy("Energy Tools", Blue), Barber("Barber Tools", Purple)
+internal enum class Section(val title: String) {
+    Weapons("Weapons"), Energy("Energy Tools"), Barber("Barber Tools")
 }
+
+private val Section.accent: Color
+    get() = when (this) {
+        Section.Weapons -> Red
+        Section.Energy -> Blue
+        Section.Barber -> Purple
+    }
 
 private data class SimItem(val name: String, val section: Section, val category: String)
 
