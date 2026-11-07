@@ -62,7 +62,7 @@ private val Red = Color(0xFFFF334F)
 private val Blue = Color(0xFF37B9FF)
 private val Purple = Color(0xFFB65CFF)
 
-private enum class Section(val title: String, val accent: Color) {
+internal enum class Section(val title: String, val accent: Color) {
     Weapons("Weapons", Red), Energy("Energy Tools", Blue), Barber("Barber Tools", Purple)
 }
 
