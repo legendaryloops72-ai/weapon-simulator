@@ -9,6 +9,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,6 +25,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
@@ -52,6 +54,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -231,19 +235,24 @@ private fun HomeScreen(onSection: (Section) -> Unit, onFavorites: () -> Unit, on
             Row { IconButton(onClick = onFavorites) { Icon(Icons.Default.Favorite, "Favorites", tint = Red) }; IconButton(onClick = onSettings) { Icon(Icons.Default.Settings, "Settings", tint = Color.White) } }
         }
         Spacer(Modifier.height(22.dp)); Text("Choose your experience", color = Color.White, fontSize = 21.sp, fontWeight = FontWeight.Bold); Spacer(Modifier.height(14.dp))
-        HomeCard("Weapons", "Realistic weapon simulator", Red) { onSection(Section.Weapons) }
-        HomeCard("Energy Tools", "Electric and fantasy effects", Blue) { onSection(Section.Energy) }
-        HomeCard("Barber Tools", "Clippers and salon tools", Purple) { onSection(Section.Barber) }
+        HomeCard(Section.Weapons, "Realistic weapon simulator") { onSection(Section.Weapons) }
+        HomeCard(Section.Energy, "Electric and fantasy effects") { onSection(Section.Energy) }
+        HomeCard(Section.Barber, "Clippers and salon tools") { onSection(Section.Barber) }
         Spacer(Modifier.weight(1f)); Text("Favorites  •  Mini Games  •  Gallery  •  Premium", color = Color.Gray, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
     }
 }
 
 @Composable
-private fun HomeCard(title: String, subtitle: String, accent: Color, onClick: () -> Unit) {
+private fun HomeCard(section: Section, subtitle: String, onClick: () -> Unit) {
+    val imageRes = when (section) {
+        Section.Weapons -> R.drawable.weapon_card
+        Section.Energy -> R.drawable.energy_card
+        Section.Barber -> R.drawable.barber_card
+    }
     Card(Modifier.fillMaxWidth().padding(vertical = 7.dp).clickable(onClick = onClick), shape = RoundedCornerShape(22.dp), colors = CardDefaults.cardColors(containerColor = Panel)) {
-        Row(Modifier.padding(18.dp), verticalAlignment = Alignment.CenterVertically) {
-            Box(Modifier.size(56.dp).background(accent.copy(alpha = .18f), RoundedCornerShape(16.dp)))
-            Spacer(Modifier.width(16.dp)); Column { Text(title, color = Color.White, fontSize = 19.sp, fontWeight = FontWeight.Bold); Text(subtitle, color = Color.Gray, fontSize = 13.sp) }
+        Row(Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
+            Image(painter = painterResource(imageRes), contentDescription = section.title, contentScale = ContentScale.Crop, modifier = Modifier.size(82.dp).clip(RoundedCornerShape(16.dp)))
+            Spacer(Modifier.width(16.dp)); Column { Text(section.title, color = Color.White, fontSize = 19.sp, fontWeight = FontWeight.Bold); Text(subtitle, color = Color.Gray, fontSize = 13.sp) }
         }
     }
 }
