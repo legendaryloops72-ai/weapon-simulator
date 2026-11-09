@@ -1,0 +1,8 @@
+{
+  "name": "Weapon Simulator",
+  "description": "Interactive sound and visual simulator for weapons, energy blades, and barber tools.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
