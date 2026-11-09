@@ -41,7 +41,8 @@ data class SimItem(
     val name: String,
     val section: Section,
     val category: String,
-    val drawableRes: Int
+    val drawableRes: Int,
+    val assetPath: String = ""
 )
 
 val catalogItems: List<SimItem> = buildList {
@@ -64,11 +65,13 @@ val catalogItems: List<SimItem> = buildList {
         R.drawable.weapon_13, R.drawable.weapon_14, R.drawable.weapon_15, R.drawable.weapon_16,
         R.drawable.weapon_17, R.drawable.weapon_18, R.drawable.weapon_19, R.drawable.weapon_20,
         R.drawable.weapon_21, R.drawable.weapon_22, R.drawable.weapon_23, R.drawable.weapon_24,
-        R.drawable.weapon_25, R.drawable.weapon_26
+        R.drawable.weapon_25, R.drawable.weapon_26, R.drawable.weapon_27, R.drawable.weapon_28,
+        R.drawable.weapon_29, R.drawable.weapon_30
     )
     weaponNames.forEachIndexed { index, (name, category) ->
-        val res = weaponDrawables.getOrElse(index) { R.drawable.weapon_01 }
-        add(SimItem(name, Section.Weapons, category, res))
+        val res = weaponDrawables[index]
+        val num = String.format("%02d", index + 1)
+        add(SimItem(name, Section.Weapons, category, res, "images/weapons/weapon_$num.webp"))
     }
 
     val energyNames = listOf(
@@ -82,7 +85,8 @@ val catalogItems: List<SimItem> = buildList {
         R.drawable.energy_05, R.drawable.energy_06, R.drawable.energy_07, R.drawable.energy_08,
         R.drawable.energy_09, R.drawable.energy_10, R.drawable.energy_11, R.drawable.energy_12,
         R.drawable.energy_13, R.drawable.energy_14, R.drawable.energy_15, R.drawable.energy_16,
-        R.drawable.energy_17, R.drawable.energy_18, R.drawable.energy_19, R.drawable.energy_20
+        R.drawable.energy_17, R.drawable.energy_18, R.drawable.energy_19, R.drawable.energy_20,
+        R.drawable.energy_21, R.drawable.energy_22, R.drawable.energy_23, R.drawable.energy_24
     )
     energyNames.forEachIndexed { index, name ->
         val category = when {
@@ -92,8 +96,9 @@ val catalogItems: List<SimItem> = buildList {
             name.contains("Gauntlet") || name.contains("Rod") -> "Taser"
             else -> "Electric"
         }
-        val res = energyDrawables.getOrElse(index) { R.drawable.energy_01 }
-        add(SimItem(name, Section.Energy, category, res))
+        val res = energyDrawables[index]
+        val num = String.format("%02d", index + 1)
+        add(SimItem(name, Section.Energy, category, res, "images/energy/energy_$num.webp"))
     }
 
     val barberNames = listOf(
@@ -109,7 +114,8 @@ val catalogItems: List<SimItem> = buildList {
         R.drawable.barber_09, R.drawable.barber_10, R.drawable.barber_11, R.drawable.barber_12,
         R.drawable.barber_13, R.drawable.barber_14, R.drawable.barber_15, R.drawable.barber_16,
         R.drawable.barber_17, R.drawable.barber_18, R.drawable.barber_19, R.drawable.barber_20,
-        R.drawable.barber_21
+        R.drawable.barber_21, R.drawable.barber_22, R.drawable.barber_23, R.drawable.barber_24,
+        R.drawable.barber_25, R.drawable.barber_26, R.drawable.barber_27
     )
     barberNames.forEachIndexed { index, name ->
         val category = when {
@@ -118,7 +124,8 @@ val catalogItems: List<SimItem> = buildList {
             name == "Hair Dryer" || name == "Spray Bottle" || name == "Comb" || name == "Barber Brush" -> "Salon"
             else -> "Clippers"
         }
-        val res = barberDrawables.getOrElse(index) { R.drawable.barber_01 }
-        add(SimItem(name, Section.Barber, category, res))
+        val res = barberDrawables[index]
+        val num = String.format("%02d", index + 1)
+        add(SimItem(name, Section.Barber, category, res, "images/barber/barber_$num.webp"))
     }
 }

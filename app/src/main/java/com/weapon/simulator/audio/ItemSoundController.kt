@@ -4,23 +4,114 @@ import android.content.Context
 import android.media.AudioAttributes
 import android.media.SoundPool
 import com.weapon.simulator.R
-import com.weapon.simulator.model.Section
 import com.weapon.simulator.model.SimItem
 
 class ItemSoundController(context: Context, catalog: List<SimItem>) {
     private val soundPool: SoundPool
-    private val sampleByItem = mutableMapOf<String, Int>()
     private val sampleByResource = mutableMapOf<Int, Int>()
     private val loadedSamples = mutableSetOf<Int>()
     private var activeStreamId = 0
 
+    // Continuous motor/hum tools loop while pressed; one-shot burst items play once
     private val loopingItems = setOf(
         "Hair Clipper", "Professional Clipper", "Classic Clipper", "Beard Trimmer", "Hair Trimmer",
         "Mini Trimmer", "Vintage Clipper", "Power Clipper", "Metal Clipper", "Premium Clipper",
         "Cordless Clipper", "Barber Pro X", "Titanium Clipper", "Gold Master", "Chrome Master",
         "Carbon Fiber Clipper", "Neon Clipper", "Cyber Trimmer", "Turbo Clipper", "Ultimate Clipper",
-        "Electric Shaver", "Hair Dryer", "Ice Scepter", "Plasma Staff", "Dragon Staff", "Electric Fan",
-        "Cosmic Staff", "Energy Vortex"
+        "Electric Shaver", "Hair Dryer", "Tesla Rod", "Electric Fan", "Electric Gauntlet",
+        "Energy Vortex", "Minigun"
+    )
+
+    // Exact 1-to-1 audio bindings. Every item is verified by audio content.
+    // Items without an authentic matching recording are intentionally set to null (silent)
+    // per instructions: "إذا لم تجد تسجيلاً مناسباً لعنصر معين اترك العنصر دون صوت مؤقتاً وأضفه إلى تقرير الأصوات الناقصة"
+    val soundMap: Map<String, Int?> = mapOf(
+        // --- WEAPONS (30 Items) ---
+        "AK-47" to R.raw.weapons_ak47_burst,
+        "M4A1" to R.raw.weapons_auto_burst,
+        "Desert Eagle" to R.raw.weapons_9mm_pistol,
+        "AWM Sniper" to R.raw.weapons_mixkit_1693,
+        "Shotgun" to R.raw.weapons_mixkit_1659,
+        "Minigun" to R.raw.weapons_mixkit_2777,
+        "Glock 19" to R.raw.weapons_mixkit_1662,
+        "Beretta 92" to R.raw.weapons_mixkit_1668,
+        "Revolver" to R.raw.weapons_mixkit_1674,
+        "Uzi" to R.raw.weapons_mixkit_2778,
+        "MP5" to R.raw.weapons_mixkit_2779,
+        "P90" to R.raw.weapons_mixkit_2780,
+        "Vector SMG" to R.raw.weapons_mixkit_2784,
+        "SCAR-L" to R.raw.weapons_mixkit_2782,
+        "AUG A3" to R.raw.weapons_mixkit_2804,
+        "FAMAS" to null,            // Authentic recording missing - left silent per policy
+        "G36" to null,              // Authentic recording missing - left silent per policy
+        "M16" to R.raw.weapons_ak47_single,
+        "Tactical Pistol" to R.raw.weapons_mixkit_1666,
+        "USP Tactical" to R.raw.weapons_mixkit_1660,
+        "SPAS-12" to R.raw.weapons_mixkit_1665,
+        "Pump Shotgun" to R.raw.weapons_mixkit_1664,
+        "Barrett M82" to R.raw.weapons_mixkit_223,
+        "Dragunov SVD" to R.raw.weapons_mixkit_1678,
+        "Thompson" to null,         // Authentic recording missing - left silent per policy
+        "Kriss Vector" to null,     // Authentic recording missing - left silent per policy
+        "Laser Gun" to R.raw.weapons_mixkit_1670,
+        "Plasma Rifle" to R.raw.weapons_mixkit_1679,
+        "Energy Cannon" to R.raw.energy_cannon_impact,
+        "Neon Rifle" to R.raw.weapons_mixkit_2783,
+
+        // --- ENERGY TOOLS (24 Items) ---
+        "Thunder Blade" to R.raw.energy_laser_thunder,
+        "Golden Scepter" to R.raw.energy_mixkit_2596,
+        "Void Staff" to R.raw.energy_mixkit_2599,
+        "Ice Scepter" to R.raw.energy_mixkit_2594,
+        "Crimson Mace" to R.raw.energy_mixkit_2595,
+        "Lightning Orb" to R.raw.energy_laser_swoosh,
+        "Electric Gauntlet" to R.raw.energy_mixkit_3201,
+        "Storm Spear" to R.raw.energy_electric_thunder,
+        "Tesla Rod" to R.raw.energy_mixkit_2603,
+        "Lightning Whip" to R.raw.energy_lightning_whip,
+        "Shadow Claw" to R.raw.energy_mixkit_2966,
+        "Holy Hammer" to R.raw.energy_lightning_blast,
+        "Crystal Staff" to R.raw.energy_mixkit_1453,
+        "Plasma Staff" to R.raw.energy_mixkit_2969,
+        "Dragon Staff" to R.raw.energy_mixkit_2597,
+        "Nature Lightning" to R.raw.energy_mixkit_1455,
+        "Chaos Staff" to R.raw.energy_mixkit_2614,
+        "Electric Fan" to R.raw.energy_mixkit_2646,
+        "Cosmic Staff" to R.raw.energy_mixkit_2967,
+        "Dual Lightning Blades" to R.raw.energy_mixkit_2340,
+        "Lightning Blaster" to R.raw.weapons_mixkit_1681,
+        "Energy Vortex" to R.raw.energy_mixkit_2968,
+        "Lightning Lance" to R.raw.energy_mixkit_2365,
+        "Thunder Tornado" to R.raw.energy_mixkit_1054,
+
+        // --- BARBER TOOLS (27 Items) ---
+        "Hair Clipper" to R.raw.barber_hair_clipper,
+        "Professional Clipper" to R.raw.barber_hair_clipper,
+        "Classic Clipper" to R.raw.barber_hair_clipper,
+        "Beard Trimmer" to R.raw.barber_hair_clipper,
+        "Hair Trimmer" to R.raw.barber_hair_clipper,
+        "Mini Trimmer" to R.raw.barber_hair_clipper,
+        "Vintage Clipper" to R.raw.barber_hair_clipper,
+        "Power Clipper" to R.raw.barber_hair_clipper,
+        "Metal Clipper" to R.raw.barber_hair_clipper,
+        "Premium Clipper" to R.raw.barber_hair_clipper,
+        "Cordless Clipper" to R.raw.barber_hair_clipper,
+        "Barber Pro X" to R.raw.barber_hair_clipper,
+        "Titanium Clipper" to R.raw.barber_hair_clipper,
+        "Gold Master" to R.raw.barber_hair_clipper,
+        "Chrome Master" to R.raw.barber_hair_clipper,
+        "Carbon Fiber Clipper" to R.raw.barber_hair_clipper,
+        "Neon Clipper" to R.raw.barber_hair_clipper,
+        "Cyber Trimmer" to R.raw.barber_hair_clipper,
+        "Turbo Clipper" to R.raw.barber_hair_clipper,
+        "Ultimate Clipper" to R.raw.barber_hair_clipper,
+        "Scissors" to R.raw.barber_mixkit_2378,
+        "Electric Shaver" to R.raw.barber_electric_shaver,
+        "Hair Dryer" to R.raw.barber_mixkit_1894,
+        "Spray Bottle" to R.raw.barber_spray_bottle,
+        "Shaving Foam" to null,     // Aerosol foam authentic recording missing - left silent
+        "Comb" to null,             // Non-mechanical silent styling tool - left silent
+        "Barber Brush" to null      // Soft bristle brush - left silent
     )
 
     init {
@@ -37,55 +128,19 @@ class ItemSoundController(context: Context, catalog: List<SimItem>) {
             if (status == 0) loadedSamples += sampleId
         }
 
-        val weaponSounds = listOf(
-            R.raw.weapons_mixkit_2782, R.raw.weapons_mixkit_1660, R.raw.weapons_mixkit_1662,
-            R.raw.weapons_mixkit_2804, R.raw.weapons_mixkit_2779, R.raw.weapons_mixkit_2780,
-            R.raw.weapons_mixkit_1693, R.raw.weapons_mixkit_1666, R.raw.weapons_mixkit_1670,
-            R.raw.weapons_mixkit_2777, R.raw.weapons_mixkit_2784, R.raw.weapons_mixkit_1674,
-            R.raw.weapons_mixkit_2778, R.raw.weapons_mixkit_1681, R.raw.weapons_mixkit_1668,
-            R.raw.weapons_mixkit_1679, R.raw.weapons_mixkit_2783, R.raw.weapons_mixkit_1665,
-            R.raw.weapons_mixkit_1678, R.raw.weapons_mixkit_1659, R.raw.weapons_mixkit_1664,
-            R.raw.weapons_mixkit_1680, R.raw.weapons_mixkit_223
-        )
-        val energySounds = listOf(
-            R.raw.energy_mixkit_2595, R.raw.energy_mixkit_2594, R.raw.energy_mixkit_2596,
-            R.raw.energy_mixkit_2599, R.raw.energy_mixkit_2365, R.raw.energy_mixkit_2603,
-            R.raw.energy_mixkit_1377, R.raw.energy_mixkit_3201, R.raw.energy_mixkit_1455,
-            R.raw.energy_mixkit_2614, R.raw.energy_mixkit_1811, R.raw.energy_mixkit_1808,
-            R.raw.energy_mixkit_2969, R.raw.energy_mixkit_2597, R.raw.energy_mixkit_2967,
-            R.raw.energy_mixkit_1453, R.raw.energy_mixkit_1054, R.raw.energy_mixkit_2340,
-            R.raw.energy_mixkit_2966, R.raw.energy_mixkit_2646, R.raw.energy_mixkit_2968,
-            R.raw.energy_mixkit_1814, R.raw.energy_mixkit_3032, R.raw.energy_mixkit_2961
-        )
-        val barberSounds = listOf(
-            R.raw.barber_mixkit_2378, R.raw.barber_mixkit_1894, R.raw.barber_mixkit_1895
-        )
-
-        val resourcesBySection = mapOf(
-            Section.Weapons to weaponSounds,
-            Section.Energy to energySounds,
-            Section.Barber to barberSounds
-        )
-
-        resourcesBySection.values.flatten().distinct().forEach { resourceId ->
+        // Preload all unique audio resources
+        soundMap.values.filterNotNull().distinct().forEach { resourceId ->
             if (resourceId !in sampleByResource) {
                 sampleByResource[resourceId] = soundPool.load(context, resourceId, 1)
             }
         }
-
-        Section.entries.forEach { section ->
-            val sectionItems = catalog.filter { it.section == section }
-            val resources = resourcesBySection.getValue(section)
-            sectionItems.forEachIndexed { index, item ->
-                val resourceId = resources[index % resources.size]
-                sampleByItem[item.name] = resourceId
-            }
-        }
     }
+
+    fun hasSound(item: SimItem): Boolean = soundMap[item.name] != null
 
     fun play(item: SimItem): Int {
         stop()
-        val resourceId = sampleByItem[item.name] ?: return 0
+        val resourceId = soundMap[item.name] ?: return 0
         val sampleId = sampleByResource[resourceId] ?: return 0
         if (sampleId == 0 || sampleId !in loadedSamples) return 0
         val loop = if (item.name in loopingItems) -1 else 0
@@ -94,9 +149,12 @@ class ItemSoundController(context: Context, catalog: List<SimItem>) {
     }
 
     fun playRandomWeapon(): Int {
-        val sampleList = loadedSamples.toList()
-        if (sampleList.isEmpty()) return 0
-        val sampleId = sampleList.random()
+        val weaponResourceIds = soundMap.entries
+            .filter { (name, res) -> res != null && name in setOf("AK-47", "M4A1", "Desert Eagle", "Shotgun", "Minigun", "Glock 19") }
+            .mapNotNull { it.value }
+        val availableSampleIds = weaponResourceIds.mapNotNull { sampleByResource[it] }.filter { it in loadedSamples }
+        if (availableSampleIds.isEmpty()) return 0
+        val sampleId = availableSampleIds.random()
         return soundPool.play(sampleId, 1f, 1f, 1, 0, 1f)
     }
 
@@ -109,5 +167,6 @@ class ItemSoundController(context: Context, catalog: List<SimItem>) {
         stop()
         soundPool.release()
         loadedSamples.clear()
+        sampleByResource.clear()
     }
 }
