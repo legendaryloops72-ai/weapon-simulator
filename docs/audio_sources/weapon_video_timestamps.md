@@ -35,4 +35,4 @@ Source: `1000059476.mp4` (720x1280, 30 fps, 61.207 s). The source video contains
 
 ## Integration policy
 
-Only clips with an exact catalog image are assigned to an item. All 28 extracted clips are included in `app/src/main/res/raw/`. The 5 exact matches are wired in the app; the remaining clips remain available but unassigned until a matching image/model is confirmed, preventing incorrect audio-image pairings.
+Only clips with an exact catalog image are assigned to an item. All 28 extracted clips are included in `app/src/main/res/raw/`. Eight exact matches are wired in the app (`FAMAS`, `AUG`, `P90`, `MP5`, `UZI`, `KRISS Vector`, `M4A1`, and `AK-47`); the remaining clips remain available but unassigned until a matching image/model is confirmed, preventing incorrect audio-image pairings.
