@@ -39,6 +39,10 @@ private val arabicLabels = mapOf(
     "haptic vibration" to "الاهتزاز اللمسي", "tactile vibration pulse when holding weapons or tools" to "اهتزاز عند الضغط على الأسلحة أو الأدوات",
     "safe effects mode" to "وضع المؤثرات الآمن", "reduces flashing intensity for visual comfort" to "يقلل شدة الوميض لراحة العين",
     "app information" to "معلومات التطبيق", "language: english / العربية" to "اللغة",
+    "use the en / عربي button in the home header to switch language." to "استخدم زر EN / عربي في أعلى الشاشة لتبديل اللغة.",
+    "47 realistic weapons" to "47 سلاحاً متنوعاً",
+    "24 electric effects" to "24 مؤثراً كهربائياً",
+    "27 professional tools" to "27 أداة احترافية",
     "offline soundpool audio engine loaded with 50 high-fidelity sound effects." to "محرك صوت يعمل دون اتصال بالإنترنت.",
     "flash intensity" to "شدة الوميض", "simulator preferences" to "تفضيلات المحاكي",
     "target score" to "النقاط", "hit streak" to "الإصابات المتتالية",
@@ -48,6 +52,7 @@ private val arabicLabels = mapOf(
     "unlimited high-tech simulation effects" to "مؤثرات محاكاة متقدمة بلا حدود",
     "all features unlocked" to "جميع المزايا متاحة",
     "unlock all 81 weapon & tool skins" to "فتح جميع أشكال الأسلحة والأدوات",
+    "unlock all 98 weapon & tool skins" to "فتح جميع أشكال الأسلحة والأدوات الـ98",
     "exclusive ultra-bass gunfire sounds" to "مؤثرات إطلاق نار حصرية",
     "continuous high-speed clipper fx" to "مؤثرات ماكينات حلاقة مستمرة",
     "infinite reflex mini game modes" to "أنماط ألعاب سرعة استجابة متعددة",
@@ -81,6 +86,15 @@ fun localizedUiText(value: String, language: String): String {
     if (language != "ar") return value
     val key = value.trim().replace(Regex("\\s+"), " ").lowercase()
     arabicLabels[key]?.let { return it }
+    Regex("^(\\d+) realistic weapons$", RegexOption.IGNORE_CASE).matchEntire(value.trim())?.let {
+        return it.groupValues[1] + " سلاحاً متنوعاً"
+    }
+    Regex("^(\\d+) electric effects$", RegexOption.IGNORE_CASE).matchEntire(value.trim())?.let {
+        return it.groupValues[1] + " مؤثراً كهربائياً"
+    }
+    Regex("^(\\d+) professional tools$", RegexOption.IGNORE_CASE).matchEntire(value.trim())?.let {
+        return it.groupValues[1] + " أداة احترافية"
+    }
     Regex("^all \\((\\d+)\\)$", RegexOption.IGNORE_CASE).matchEntire(value.trim())?.let {
         return "الكل (" + it.groupValues[1] + ")"
     }
