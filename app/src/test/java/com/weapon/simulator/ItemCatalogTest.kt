@@ -36,4 +36,24 @@ class ItemCatalogTest {
             assertTrue("Asset path must not be blank: ${item.name}", item.assetPath.isNotBlank())
         }
     }
+    @Test
+    fun catalogUsesUniqueImageResourcesAndAssetPaths() {
+        assertEquals(
+            "Every catalogue entry must have its own drawable",
+            catalogItems.size,
+            catalogItems.map { it.drawableRes }.toSet().size
+        )
+        assertEquals(
+            "Every catalogue entry must have its own asset path",
+            catalogItems.size,
+            catalogItems.map { it.assetPath }.toSet().size
+        )
+    }
+
+    @Test
+    fun allWeaponCategoriesAreRepresented() {
+        val categories = catalogItems.filter { it.section == Section.Weapons }.map { it.category }.toSet()
+        assertTrue(categories.containsAll(setOf("Assault Rifles", "SMG", "Pistols", "Shotguns", "Snipers", "LMG", "Special")))
+    }
+
 }
