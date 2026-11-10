@@ -49,6 +49,16 @@ private val arabicLabels = mapOf(
     "tap the active glowing target to fire" to "اضغط على الهدف المضيء لإصابته",
     "reset game" to "إعادة اللعبة", "tactical reflex targets" to "أهداف اختبار سرعة الاستجابة",
     "vip simulator experience" to "تجربة المحاكي المميزة", "vip membership" to "عضوية VIP",
+    "simulator preferences" to "تفضيلات المحاكي", "visual & audio effects" to "المؤثرات المرئية والصوتية",
+    "app information" to "معلومات التطبيق", "tactical reflex targets" to "أهداف اختبار سرعة الاستجابة",
+    "target score" to "النقاط", "hit streak" to "الإصابات المتتالية",
+    "tap the active glowing target to fire" to "اضغط على الهدف المضيء لإصابته",
+    "active target" to "الهدف النشط", "reset game" to "إعادة اللعبة", "playing" to "قيد التشغيل",
+    "hold to fire" to "اضغط باستمرار للتشغيل", "unlimited high-tech simulation effects" to "مؤثرات محاكاة متقدمة بلا حدود",
+    "exclusive ultra-bass gunfire sounds" to "مؤثرات إطلاق نار حصرية",
+    "continuous high-speed clipper fx" to "مؤثرات ماكينات حلاقة مستمرة",
+    "infinite reflex mini game modes" to "أنماط ألعاب سرعة استجابة متعددة",
+    "zero ads & complete offline access" to "دون إعلانات مع إمكانية العمل دون إنترنت",
     "unlimited high-tech simulation effects" to "مؤثرات محاكاة متقدمة بلا حدود",
     "all features unlocked" to "جميع المزايا متاحة",
     "unlock all 81 weapon & tool skins" to "فتح جميع أشكال الأسلحة والأدوات",
@@ -71,7 +81,28 @@ private val arabicLabels = mapOf(
     "spas-12" to "SPAS-12", "pump shotgun" to "خرطوش بمضخة", "barrett m82" to "باريت M82",
     "dragunov svd" to "دراغونوف SVD", "thompson" to "تومبسون", "kriss vector" to "كريس فيكتور",
     "laser gun" to "مسدس ليزر", "plasma rifle" to "بندقية بلازما", "energy cannon" to "مدفع طاقة",
-    "neon rifle" to "بندقية نيون", "tactical fixed-stock rifle" to "بندقية تكتيكية بمخزون ثابت",
+    "neon rifle" to "بندقية نيون",
+    "thunder blade" to "نصل الرعد", "golden scepter" to "صولجان ذهبي", "void staff" to "عصا الفراغ",
+    "ice scepter" to "صولجان الجليد", "crimson mace" to "هراوة قرمزية", "lightning orb" to "كرة البرق",
+    "electric gauntlet" to "قفاز كهربائي", "storm spear" to "رمح العاصفة", "tesla rod" to "عصا تسلا",
+    "lightning whip" to "سوط البرق", "shadow claw" to "مخلب الظل", "holy hammer" to "مطرقة مقدسة",
+    "crystal staff" to "عصا الكريستال", "plasma staff" to "عصا البلازما", "dragon staff" to "عصا التنين",
+    "nature lightning" to "برق الطبيعة", "chaos staff" to "عصا الفوضى", "electric fan" to "مروحة كهربائية",
+    "cosmic staff" to "عصا كونية", "dual lightning blades" to "نصلان صاعقان", "lightning blaster" to "قاذف البرق",
+    "energy vortex" to "دوامة الطاقة", "lightning lance" to "رمح البرق", "thunder tornado" to "إعصار الرعد",
+    "hair clipper" to "ماكينة حلاقة الشعر", "professional clipper" to "ماكينة احترافية",
+    "classic clipper" to "ماكينة كلاسيكية", "beard trimmer" to "ماكينة تهذيب اللحية",
+    "hair trimmer" to "ماكينة تشذيب الشعر", "mini trimmer" to "ماكينة صغيرة",
+    "vintage clipper" to "ماكينة كلاسيكية قديمة", "power clipper" to "ماكينة قوية",
+    "metal clipper" to "ماكينة معدنية", "premium clipper" to "ماكينة فاخرة",
+    "cordless clipper" to "ماكينة لاسلكية", "barber pro x" to "باربر برو X",
+    "titanium clipper" to "ماكينة تيتانيوم", "gold master" to "غولد ماستر",
+    "chrome master" to "كروم ماستر", "carbon fiber clipper" to "ماكينة ألياف الكربون",
+    "neon clipper" to "ماكينة نيون", "cyber trimmer" to "ماكينة سايبر",
+    "turbo clipper" to "ماكينة توربو", "ultimate clipper" to "ماكينة ألتيميت",
+    "electric shaver" to "آلة حلاقة كهربائية", "hair dryer" to "مجفف شعر",
+    "spray bottle" to "زجاجة رش", "shaving foam" to "رغوة حلاقة", "comb" to "مشط", "barber brush" to "فرشاة حلاقة",
+    "tactical fixed-stock rifle" to "بندقية تكتيكية بمخزون ثابت",
     "m4-style assault rifle" to "بندقية هجومية بنمط M4", "tactical bullpup rifle" to "بندقية بولببب تكتيكية",
     "top-optic assault rifle" to "بندقية هجومية بمنظار علوي", "green scoped bullpup rifle" to "بندقية بولببب خضراء بمنظار",
     "wood ak rifle" to "بندقية AK بمخزون خشبي", "scoped bullpup rifle" to "بندقية بولببب بمنظار",
@@ -94,6 +125,12 @@ fun localizedUiText(value: String, language: String): String {
     }
     Regex("^(\\d+) professional tools$", RegexOption.IGNORE_CASE).matchEntire(value.trim())?.let {
         return it.groupValues[1] + " أداة احترافية"
+    }
+    Regex("^favorite (.+)$", RegexOption.IGNORE_CASE).matchEntire(value.trim())?.let {
+        return "المفضلة: " + localizedUiText(it.groupValues[1], language)
+    }
+    Regex("^flash intensity \\((\\d+)%\\)$", RegexOption.IGNORE_CASE).matchEntire(value.trim())?.let {
+        return "شدة الوميض (" + it.groupValues[1] + "%)"
     }
     Regex("^all \\((\\d+)\\)$", RegexOption.IGNORE_CASE).matchEntire(value.trim())?.let {
         return "الكل (" + it.groupValues[1] + ")"
