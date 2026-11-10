@@ -1,6 +1,8 @@
 package com.weapon.simulator
 
 import android.content.Context
+import android.graphics.BitmapFactory
+import android.util.Base64
 import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
@@ -10,20 +12,32 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
+import kotlinx.coroutines.delay
 import com.weapon.simulator.audio.ItemSoundController
 import com.weapon.simulator.model.AccentCyan
 import com.weapon.simulator.model.AccentRed
@@ -37,6 +51,7 @@ import com.weapon.simulator.ui.HomeScreen
 import com.weapon.simulator.ui.MiniGamesScreen
 import com.weapon.simulator.ui.PremiumScreen
 import com.weapon.simulator.ui.SettingsScreen
+import com.weapon.simulator.ui.LocalAppLanguage
 
 typealias Section = com.weapon.simulator.model.Section
 
@@ -54,6 +69,27 @@ class MainActivity : ComponentActivity() {
 private fun WeaponSimulatorApp() {
     val context = LocalContext.current
     val prefs = remember(context) { context.getSharedPreferences("weapon_sim_prefs", Context.MODE_PRIVATE) }
+    var language by remember { mutableStateOf(prefs.getString("language", "ar") ?: "ar") }
+    var splashVisible by remember { mutableStateOf(true) }
+    val splashBitmap = remember(context) {
+        runCatching {
+            val encoded = listOf(
+                "splash_part_01.txt",
+                "splash_part_02.txt",
+                "splash_part_03.txt",
+                "splash_part_04.txt"
+            ).joinToString(separator = "") { assetName ->
+                context.assets.open(assetName).bufferedReader().use { it.readText() }
+            }
+            val imageBytes = Base64.decode(encoded, Base64.DEFAULT)
+            BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)?.asImageBitmap()
+        }.getOrNull()
+    }
+
+    LaunchedEffect(Unit) {
+        delay(2300)
+        splashVisible = false
+    }
 
     val soundController = remember(context) { ItemSoundController(context, catalogItems) }
     DisposableEffect(soundController) {
@@ -112,6 +148,10 @@ private fun WeaponSimulatorApp() {
         selectedSection = null
     }
 
+    CompositionLocalProvider(
+        LocalAppLanguage provides language,
+        LocalLayoutDirection provides if (language == "ar") LayoutDirection.Rtl else LayoutDirection.Ltr
+    ) {
     MaterialTheme(
         colorScheme = darkColorScheme(
             background = ThemeDarkBg,
@@ -128,6 +168,11 @@ private fun WeaponSimulatorApp() {
                 when (destination) {
                     Destination.Home -> {
                         HomeScreen(
+                            isArabic = language == "ar",
+                            onToggleLanguage = {
+                                language = if (language == "ar") "en" else "ar"
+                                prefs.edit().putString("language", language).apply()
+                            },
                             onNavigateSection = { sec ->
                                 selectedSection = sec
                                 destination = when (sec) {
@@ -221,7 +266,29 @@ private fun WeaponSimulatorApp() {
                         PremiumScreen(onBack = { destination = Destination.Home })
                     }
                 }
+
+                AnimatedVisibility(
+                    visible = splashVisible,
+                    exit = fadeOut(animationSpec = tween(durationMillis = 450))
+                ) {
+                    if (splashBitmap != null) {
+                        Image(
+                            bitmap = splashBitmap,
+                            contentDescription = "Weapon and Barber Simulator loading screen",
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                    } else {
+                        Image(
+                            painter = painterResource(id = com.weapon.simulator.R.drawable.splash_screen),
+                            contentDescription = "Weapon and Barber Simulator loading screen",
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
+                }
             }
+        }
         }
     }
 }

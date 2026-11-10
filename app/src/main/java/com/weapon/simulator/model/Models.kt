@@ -13,7 +13,7 @@ val AccentGold = Color(0xFFFFB800)
 val TextMuted = Color(0xFF8F9FB5)
 
 enum class Section(val title: String, val subtitle: String) {
-    Weapons("Weapons", "30 REALISTIC WEAPONS"),
+    Weapons("Weapons", "47 REALISTIC WEAPONS"),
     Energy("Energy Tools", "24 ELECTRIC EFFECTS"),
     Barber("Barber Tools", "27 PROFESSIONAL TOOLS")
 }

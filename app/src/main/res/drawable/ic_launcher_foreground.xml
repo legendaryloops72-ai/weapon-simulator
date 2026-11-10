@@ -1,8 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:width="66dp"
-        android:height="66dp"
-        android:drawable="@drawable/ic_launcher_fg"
-        android:gravity="center" />
-</layer-list>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#122236"
+        android:pathData="M54,7 L91,21 L88,57 C86,77 72,91 54,101 C36,91 22,77 20,57 L17,21 Z" />
+    <path
+        android:strokeColor="#16CFFF"
+        android:strokeWidth="2.5"
+        android:fillColor="#00000000"
+        android:pathData="M54,13 L85,25 L82,56 C80,72 68,84 54,93 C40,84 28,72 26,56 L23,25 Z" />
+    <path
+        android:fillColor="#FF334F"
+        android:pathData="M49,26 L62,26 L57,44 L70,44 L42,79 L49,54 L37,54 Z" />
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2.4"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000"
+        android:pathData="M32,46 L76,46 M54,36 L54,26 M54,66 L54,80" />
+    <path
+        android:fillColor="#16CFFF"
+        android:pathData="M29,20 L36,20 L36,23 L29,23 Z M72,20 L79,20 L79,23 L72,23 Z" />
+</vector>

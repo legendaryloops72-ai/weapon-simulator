@@ -44,7 +44,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -81,6 +80,8 @@ import com.weapon.simulator.model.ThemeDarkBg
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
+    isArabic: Boolean,
+    onToggleLanguage: () -> Unit,
     onNavigateSection: (Section) -> Unit,
     onNavigateDestination: (Destination) -> Unit
 ) {
@@ -106,7 +107,9 @@ fun HomeScreen(
                 // Top Hero Header Banner matching user's reference mockup
                 HomeHeroHeader(
                     onMenuClick = { showMenuSheet = true },
-                    onSettingsClick = { onNavigateDestination(Destination.Settings) }
+                    onSettingsClick = { onNavigateDestination(Destination.Settings) },
+                    isArabic = isArabic,
+                    onToggleLanguage = onToggleLanguage
                 )
 
                 Spacer(modifier = Modifier.height(10.dp))
@@ -159,7 +162,9 @@ fun HomeScreen(
 @Composable
 private fun HomeHeroHeader(
     onMenuClick: () -> Unit,
-    onSettingsClick: () -> Unit
+    onSettingsClick: () -> Unit,
+    isArabic: Boolean,
+    onToggleLanguage: () -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -205,6 +210,24 @@ private fun HomeHeroHeader(
                         modifier = Modifier.size(22.dp)
                     )
                 }
+            }
+
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(14.dp))
+                    .background(Color(0xCC0B1423))
+                    .border(1.dp, AccentCyan.copy(alpha = 0.8f), RoundedCornerShape(14.dp))
+                    .clickable(onClick = onToggleLanguage)
+                    .padding(horizontal = 12.dp, vertical = 9.dp)
+                    .testTag("home_language_toggle"),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = if (isArabic) "EN" else "عربي",
+                    color = AccentCyan,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Black
+                )
             }
 
             Box(
@@ -491,7 +514,7 @@ private fun MenuBottomSheetContent(
         Spacer(modifier = Modifier.height(12.dp))
 
         // Navigation Items
-        DrawerItem("Weapons Simulator (30 Models)", Icons.Default.Shield, AccentRed) {
+        DrawerItem("Weapons Simulator (47 Models)", Icons.Default.Shield, AccentRed) {
             onNavigateSection(Section.Weapons)
         }
         DrawerItem("Energy Tools (24 Effects)", Icons.Default.Bolt, AccentCyan) {

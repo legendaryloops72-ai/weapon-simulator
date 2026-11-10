@@ -38,7 +38,6 @@ import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -92,16 +91,25 @@ fun CatalogScreen(
     val accent = section?.tint ?: AccentGold
 
     val categories = when (section) {
-        Section.Weapons -> listOf("All", "Pistols", "Assault Rifles", "SMG", "Shotguns", "Snipers", "Special")
+        Section.Weapons -> listOf("All", "Pistols", "Assault Rifles", "SMG", "Shotguns", "Snipers", "LMG", "Special")
         Section.Energy -> listOf("All", "Laser", "Taser", "Electric", "Fantasy")
         Section.Barber -> listOf("All", "Clippers", "Scissors", "Shaving", "Salon")
         null -> listOf("All")
     }
 
-    val filteredItems = if (selectedCategory == "All") {
+    val categoryOrder = when (section) {
+        Section.Weapons -> listOf("Assault Rifles", "SMG", "Pistols", "Shotguns", "Snipers", "LMG", "Special")
+        Section.Energy -> listOf("Laser", "Taser", "Electric", "Fantasy")
+        Section.Barber -> listOf("Clippers", "Scissors", "Shaving", "Salon")
+        null -> emptyList()
+    }
+    val filteredItems = (if (selectedCategory == "All") {
         items
     } else {
         items.filter { it.category == selectedCategory }
+    }).sortedBy { item ->
+        val position = categoryOrder.indexOf(item.category)
+        if (position < 0) Int.MAX_VALUE else position
     }
 
     Surface(
