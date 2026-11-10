@@ -126,6 +126,14 @@ fun localizedUiText(value: String, language: String): String {
     Regex("^(\\d+) professional tools$", RegexOption.IGNORE_CASE).matchEntire(value.trim())?.let {
         return it.groupValues[1] + " أداة احترافية"
     }
+    Regex("^(weapons|energy tools|barber tools) \\((\\d+)\\)$", RegexOption.IGNORE_CASE).matchEntire(value.trim())?.let {
+        val label = when (it.groupValues[1].lowercase()) {
+            "weapons" -> "الأسلحة"
+            "energy tools" -> "أدوات الطاقة"
+            else -> "أدوات الحلاقة"
+        }
+        return label + " (" + it.groupValues[2] + ")"
+    }
     Regex("^favorite (.+)$", RegexOption.IGNORE_CASE).matchEntire(value.trim())?.let {
         return "المفضلة: " + localizedUiText(it.groupValues[1], language)
     }
