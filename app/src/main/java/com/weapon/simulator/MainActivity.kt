@@ -1,6 +1,8 @@
 package com.weapon.simulator
 
 import android.content.Context
+import android.graphics.BitmapFactory
+import android.util.Base64
 import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
@@ -30,6 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -68,6 +71,20 @@ private fun WeaponSimulatorApp() {
     val prefs = remember(context) { context.getSharedPreferences("weapon_sim_prefs", Context.MODE_PRIVATE) }
     var language by remember { mutableStateOf(prefs.getString("language", "ar") ?: "ar") }
     var splashVisible by remember { mutableStateOf(true) }
+    val splashBitmap = remember(context) {
+        runCatching {
+            val encoded = listOf(
+                "splash_part_01.txt",
+                "splash_part_02.txt",
+                "splash_part_03.txt",
+                "splash_part_04.txt"
+            ).joinToString(separator = "") { assetName ->
+                context.assets.open(assetName).bufferedReader().use { it.readText() }
+            }
+            val imageBytes = Base64.decode(encoded, Base64.DEFAULT)
+            BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)?.asImageBitmap()
+        }.getOrNull()
+    }
 
     LaunchedEffect(Unit) {
         delay(2300)
@@ -254,12 +271,21 @@ private fun WeaponSimulatorApp() {
                     visible = splashVisible,
                     exit = fadeOut(animationSpec = tween(durationMillis = 450))
                 ) {
-                    Image(
-                        painter = painterResource(id = com.weapon.simulator.R.drawable.splash_screen),
-                        contentDescription = "Weapon and Barber Simulator loading screen",
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop
-                    )
+                    if (splashBitmap != null) {
+                        Image(
+                            bitmap = splashBitmap,
+                            contentDescription = "Weapon and Barber Simulator loading screen",
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                    } else {
+                        Image(
+                            painter = painterResource(id = com.weapon.simulator.R.drawable.splash_screen),
+                            contentDescription = "Weapon and Barber Simulator loading screen",
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
                 }
             }
         }
