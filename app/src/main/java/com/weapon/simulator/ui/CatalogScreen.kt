@@ -97,10 +97,19 @@ fun CatalogScreen(
         null -> listOf("All")
     }
 
-    val filteredItems = if (selectedCategory == "All") {
+    val categoryOrder = when (section) {
+        Section.Weapons -> listOf("Assault Rifles", "SMG", "Pistols", "Shotguns", "Snipers", "LMG", "Special")
+        Section.Energy -> listOf("Laser", "Taser", "Electric", "Fantasy")
+        Section.Barber -> listOf("Clippers", "Scissors", "Shaving", "Salon")
+        null -> emptyList()
+    }
+    val filteredItems = (if (selectedCategory == "All") {
         items
     } else {
         items.filter { it.category == selectedCategory }
+    }).sortedBy { item ->
+        val position = categoryOrder.indexOf(item.category)
+        if (position < 0) Int.MAX_VALUE else position
     }
 
     Surface(
