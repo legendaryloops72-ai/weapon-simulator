@@ -20,6 +20,8 @@ jobs:
           packages: platform-tools
       - name: Install Android SDK 36
         run: sdkmanager "platforms;android-36" "build-tools;35.0.0"
+      - name: Make Gradle wrapper executable
+        run: chmod +x gradlew
       - name: Build debug APK
         run: ./gradlew --no-daemon :app:assembleDebug
       - name: Run unit tests
