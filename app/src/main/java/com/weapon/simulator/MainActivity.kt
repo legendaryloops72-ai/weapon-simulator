@@ -25,6 +25,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
 import com.weapon.simulator.audio.ItemSoundController
 import com.weapon.simulator.model.AccentCyan
 import com.weapon.simulator.model.AccentRed
@@ -48,7 +50,6 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             WeaponSimulatorApp()
-        }
         }
     }
 }
@@ -116,7 +117,10 @@ private fun WeaponSimulatorApp() {
         selectedSection = null
     }
 
-    CompositionLocalProvider(LocalAppLanguage provides language) {
+    CompositionLocalProvider(
+        LocalAppLanguage provides language,
+        LocalLayoutDirection provides if (language == "ar") LayoutDirection.Rtl else LayoutDirection.Ltr
+    ) {
     MaterialTheme(
         colorScheme = darkColorScheme(
             background = ThemeDarkBg,
@@ -232,6 +236,7 @@ private fun WeaponSimulatorApp() {
                     }
                 }
             }
+        }
         }
     }
 }
