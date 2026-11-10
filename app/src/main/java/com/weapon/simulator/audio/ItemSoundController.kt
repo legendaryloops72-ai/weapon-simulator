@@ -26,9 +26,10 @@ class ItemSoundController(context: Context, catalog: List<SimItem>) {
     // Items without an authentic matching recording are intentionally set to null (silent)
     // per instructions: "إذا لم تجد تسجيلاً مناسباً لعنصر معين اترك العنصر دون صوت مؤقتاً وأضفه إلى تقرير الأصوات الناقصة"
     val soundMap: Map<String, Int?> = mapOf(
-        // --- WEAPONS (30 Items) ---
-        "AK-47" to R.raw.weapons_ak47_burst,
-        "M4A1" to R.raw.weapons_auto_burst,
+        // --- WEAPONS (47 Items) ---
+        // Exact clips extracted from the supplied 1000059476.mp4 compilation.
+        "AK-47" to R.raw.weapon_ak47,
+        "M4A1" to R.raw.weapon_m4a1,
         "Desert Eagle" to R.raw.weapons_9mm_pistol,
         "AWM Sniper" to R.raw.weapons_mixkit_1693,
         "Shotgun" to R.raw.weapons_mixkit_1659,
@@ -36,13 +37,13 @@ class ItemSoundController(context: Context, catalog: List<SimItem>) {
         "Glock 19" to R.raw.weapons_mixkit_1662,
         "Beretta 92" to R.raw.weapons_mixkit_1668,
         "Revolver" to R.raw.weapons_mixkit_1674,
-        "Uzi" to R.raw.weapons_mixkit_2778,
-        "MP5" to R.raw.weapons_mixkit_2779,
-        "P90" to R.raw.weapons_mixkit_2780,
+        "Uzi" to R.raw.weapon_uzi,
+        "MP5" to R.raw.weapon_mp5,
+        "P90" to R.raw.weapon_p90,
         "Vector SMG" to R.raw.weapons_mixkit_2784,
         "SCAR-L" to R.raw.weapons_mixkit_2782,
-        "AUG A3" to R.raw.weapons_mixkit_2804,
-        "FAMAS" to null,            // Authentic recording missing - left silent per policy
+        "AUG A3" to R.raw.weapon_aug,
+        "FAMAS" to R.raw.weapon_famas,
         "G36" to null,              // Authentic recording missing - left silent per policy
         "M16" to R.raw.weapons_ak47_single,
         "Tactical Pistol" to R.raw.weapons_mixkit_1666,
@@ -52,7 +53,7 @@ class ItemSoundController(context: Context, catalog: List<SimItem>) {
         "Barrett M82" to R.raw.weapons_mixkit_223,
         "Dragunov SVD" to R.raw.weapons_mixkit_1678,
         "Thompson" to null,         // Authentic recording missing - left silent per policy
-        "Kriss Vector" to null,     // Authentic recording missing - left silent per policy
+        "Kriss Vector" to R.raw.weapon_kriss_vector,
         "Laser Gun" to R.raw.weapons_mixkit_1670,
         "Plasma Rifle" to R.raw.weapons_mixkit_1679,
         "Energy Cannon" to R.raw.energy_cannon_impact,
