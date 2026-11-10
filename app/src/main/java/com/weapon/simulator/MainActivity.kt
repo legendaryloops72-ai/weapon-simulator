@@ -16,6 +16,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -37,6 +38,7 @@ import com.weapon.simulator.ui.HomeScreen
 import com.weapon.simulator.ui.MiniGamesScreen
 import com.weapon.simulator.ui.PremiumScreen
 import com.weapon.simulator.ui.SettingsScreen
+import com.weapon.simulator.ui.LocalAppLanguage
 
 typealias Section = com.weapon.simulator.model.Section
 
@@ -47,6 +49,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             WeaponSimulatorApp()
         }
+        }
     }
 }
 
@@ -54,6 +57,7 @@ class MainActivity : ComponentActivity() {
 private fun WeaponSimulatorApp() {
     val context = LocalContext.current
     val prefs = remember(context) { context.getSharedPreferences("weapon_sim_prefs", Context.MODE_PRIVATE) }
+    var language by remember { mutableStateOf(prefs.getString("language", "ar") ?: "ar") }
 
     val soundController = remember(context) { ItemSoundController(context, catalogItems) }
     DisposableEffect(soundController) {
@@ -112,6 +116,7 @@ private fun WeaponSimulatorApp() {
         selectedSection = null
     }
 
+    CompositionLocalProvider(LocalAppLanguage provides language) {
     MaterialTheme(
         colorScheme = darkColorScheme(
             background = ThemeDarkBg,
@@ -128,6 +133,11 @@ private fun WeaponSimulatorApp() {
                 when (destination) {
                     Destination.Home -> {
                         HomeScreen(
+                            isArabic = language == "ar",
+                            onToggleLanguage = {
+                                language = if (language == "ar") "en" else "ar"
+                                prefs.edit().putString("language", language).apply()
+                            },
                             onNavigateSection = { sec ->
                                 selectedSection = sec
                                 destination = when (sec) {
