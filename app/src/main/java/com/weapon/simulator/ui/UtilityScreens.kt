@@ -50,7 +50,6 @@ import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -198,7 +197,7 @@ fun SettingsScreen(
                     Spacer(modifier = Modifier.height(12.dp))
 
                     Text(
-                        text = "Language: English / العربية",
+                        text = "Use the EN / عربي button in the home header to switch language.",
                         color = Color.White,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold
@@ -437,7 +436,7 @@ fun GalleryScreen(
                 FilterChip(
                     selected = selectedSection == null,
                     onClick = { selectedSection = null },
-                    label = { Text("All (81)", fontSize = 11.sp) },
+                    label = { Text("All (${items.size})", fontSize = 11.sp) },
                     colors = FilterChipDefaults.filterChipColors(
                         selectedContainerColor = AccentCyan.copy(alpha = 0.2f),
                         selectedLabelColor = Color.White
