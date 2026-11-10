@@ -56,7 +56,16 @@ val catalogItems: List<SimItem> = buildList {
         "USP Tactical" to "Pistols", "SPAS-12" to "Shotguns", "Pump Shotgun" to "Shotguns",
         "Barrett M82" to "Snipers", "Dragunov SVD" to "Snipers", "Thompson" to "SMG",
         "Kriss Vector" to "SMG", "Laser Gun" to "Special", "Plasma Rifle" to "Special",
-        "Energy Cannon" to "Special", "Neon Rifle" to "Special"
+        "Energy Cannon" to "Special", "Neon Rifle" to "Special",
+        "Tactical Fixed-Stock Rifle" to "Assault Rifles", "M4-Style Assault Rifle" to "Assault Rifles",
+        "Tactical Bullpup Rifle" to "Assault Rifles", "Top-Optic Assault Rifle" to "Assault Rifles",
+        "Green Scoped Bullpup Rifle" to "Assault Rifles", "Wood AK Rifle" to "Assault Rifles",
+        "Scoped Bullpup Rifle" to "Assault Rifles", "Folding-Stock Assault Rifle" to "Assault Rifles",
+        "Classic Assault Rifle" to "Assault Rifles", "Compact Assault Rifle" to "Assault Rifles",
+        "Long-Barrel Automatic Rifle" to "Assault Rifles", "Bipod Light Machine Gun" to "LMG",
+        "Scoped Assault Rifle" to "Assault Rifles", "Bipod Automatic Rifle" to "LMG",
+        "Wood Rifle with Ported Barrel" to "Assault Rifles", "Wood-Stock Light Machine Gun" to "LMG",
+        "Folding-Stock Machine Gun" to "LMG"
     )
     val weaponDrawables = listOf(
         R.drawable.weapon_01, R.drawable.weapon_02, R.drawable.weapon_03, R.drawable.weapon_04,
@@ -66,7 +75,12 @@ val catalogItems: List<SimItem> = buildList {
         R.drawable.weapon_17, R.drawable.weapon_18, R.drawable.weapon_19, R.drawable.weapon_20,
         R.drawable.weapon_21, R.drawable.weapon_22, R.drawable.weapon_23, R.drawable.weapon_24,
         R.drawable.weapon_25, R.drawable.weapon_26, R.drawable.weapon_27, R.drawable.weapon_28,
-        R.drawable.weapon_29, R.drawable.weapon_30
+        R.drawable.weapon_29, R.drawable.weapon_30,
+        R.drawable.weapon_31, R.drawable.weapon_32, R.drawable.weapon_33, R.drawable.weapon_34,
+        R.drawable.weapon_35, R.drawable.weapon_36, R.drawable.weapon_37, R.drawable.weapon_38,
+        R.drawable.weapon_39, R.drawable.weapon_40, R.drawable.weapon_41, R.drawable.weapon_42,
+        R.drawable.weapon_43, R.drawable.weapon_44, R.drawable.weapon_45, R.drawable.weapon_46,
+        R.drawable.weapon_47
     )
     weaponNames.forEachIndexed { index, (name, category) ->
         val res = weaponDrawables[index]

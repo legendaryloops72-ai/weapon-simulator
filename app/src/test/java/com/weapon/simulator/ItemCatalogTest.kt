@@ -21,10 +21,10 @@ class ItemCatalogTest {
         val energy = catalogItems.filter { it.section == Section.Energy }
         val barber = catalogItems.filter { it.section == Section.Barber }
 
-        assertEquals("Weapons section must contain exactly 30 items", 30, weapons.size)
+        assertEquals("Weapons section must contain exactly 47 items", 47, weapons.size)
         assertEquals("Energy Tools section must contain exactly 24 items", 24, energy.size)
         assertEquals("Barber Tools section must contain exactly 27 items", 27, barber.size)
-        assertEquals("Total catalog must have exactly 81 items", 81, catalogItems.size)
+        assertEquals("Total catalog must have exactly 98 items", 98, catalogItems.size)
     }
 
     @Test
