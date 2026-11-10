@@ -420,7 +420,7 @@ fun GalleryScreen(
         ) {
             UtilityTopBar(
                 title = "3D Gallery",
-                subtitle = "ALL 81 WEAPON & TOOL MODELS",
+                subtitle = "ALL 98 WEAPON & TOOL MODELS",
                 accent = Color(0xFF55C7FF),
                 onBack = onBack,
                 modifier = Modifier.padding(horizontal = 16.dp)
@@ -563,7 +563,7 @@ fun PremiumScreen(onBack: () -> Unit) {
                     HorizontalDivider(color = Color(0xFF332714))
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    PremiumFeatureRow("Unlock All 81 Weapon & Tool Skins")
+                    PremiumFeatureRow("Unlock All 98 Weapon & Tool Skins")
                     PremiumFeatureRow("Exclusive Ultra-Bass Gunfire Sounds")
                     PremiumFeatureRow("Continuous High-Speed Clipper FX")
                     PremiumFeatureRow("Infinite Reflex Mini Game Modes")
