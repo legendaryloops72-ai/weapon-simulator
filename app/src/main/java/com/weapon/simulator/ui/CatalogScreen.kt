@@ -38,7 +38,6 @@ import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -92,7 +91,7 @@ fun CatalogScreen(
     val accent = section?.tint ?: AccentGold
 
     val categories = when (section) {
-        Section.Weapons -> listOf("All", "Pistols", "Assault Rifles", "SMG", "Shotguns", "Snipers", "Special")
+        Section.Weapons -> listOf("All", "Pistols", "Assault Rifles", "SMG", "Shotguns", "Snipers", "LMG", "Special")
         Section.Energy -> listOf("All", "Laser", "Taser", "Electric", "Fantasy")
         Section.Barber -> listOf("All", "Clippers", "Scissors", "Shaving", "Salon")
         null -> listOf("All")
