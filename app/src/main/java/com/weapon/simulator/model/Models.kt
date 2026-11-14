@@ -14,21 +14,18 @@ val TextMuted = Color(0xFF8F9FB5)
 
 enum class Section(val title: String, val subtitle: String) {
     Weapons("Weapons", "23 VIDEO WEAPONS"),
-    Energy("Energy Tools", "24 ELECTRIC EFFECTS"),
-    Barber("Barber Tools", "27 PROFESSIONAL TOOLS")
+    Barber("Barber Tools", "5 PROFESSIONAL TOOLS")
 }
 
 val Section.tint: Color
     get() = when (this) {
         Section.Weapons -> AccentRed
-        Section.Energy -> AccentCyan
         Section.Barber -> AccentPurple
     }
 
 enum class Destination(val label: String) {
     Home("Home"),
     Weapons("Weapons"),
-    Energy("Energy"),
     Barber("Barber"),
     Favorites("Favorites"),
     MiniGames("Mini Games"),
@@ -70,58 +67,27 @@ val catalogItems: List<SimItem> = buildList {
         add(SimItem(name, Section.Weapons, category, res, "images/weapons/weapon_$num.webp"))
     }
 
-    val energyNames = listOf(
-        "Thunder Blade", "Golden Scepter", "Void Staff", "Ice Scepter", "Crimson Mace", "Lightning Orb",
-        "Electric Gauntlet", "Storm Spear", "Tesla Rod", "Lightning Whip", "Shadow Claw", "Holy Hammer",
-        "Crystal Staff", "Plasma Staff", "Dragon Staff", "Nature Lightning", "Chaos Staff", "Electric Fan",
-        "Cosmic Staff", "Dual Lightning Blades", "Lightning Blaster", "Energy Vortex", "Lightning Lance", "Thunder Tornado"
-    )
-    val energyDrawables = listOf(
-        R.drawable.energy_01, R.drawable.energy_02, R.drawable.energy_03, R.drawable.energy_04,
-        R.drawable.energy_05, R.drawable.energy_06, R.drawable.energy_07, R.drawable.energy_08,
-        R.drawable.energy_09, R.drawable.energy_10, R.drawable.energy_11, R.drawable.energy_12,
-        R.drawable.energy_13, R.drawable.energy_14, R.drawable.energy_15, R.drawable.energy_16,
-        R.drawable.energy_17, R.drawable.energy_18, R.drawable.energy_19, R.drawable.energy_20,
-        R.drawable.energy_21, R.drawable.energy_22, R.drawable.energy_23, R.drawable.energy_24
-    )
-    energyNames.forEachIndexed { index, name ->
-        val category = when {
-            name.contains("Staff") || name.contains("Scepter") || name.contains("Mace") || name.contains("Hammer") ||
-                name.contains("Spear") || name.contains("Claw") || name.contains("Blade") || name.contains("Orb") -> "Fantasy"
-            name.contains("Blaster") || name.contains("Cannon") -> "Laser"
-            name.contains("Gauntlet") || name.contains("Rod") -> "Taser"
-            else -> "Electric"
-        }
-        val res = energyDrawables[index]
-        val num = String.format("%02d", index + 1)
-        add(SimItem(name, Section.Energy, category, res, "images/energy/energy_$num.webp"))
-    }
-
     val barberNames = listOf(
-        "Hair Clipper", "Professional Clipper", "Classic Clipper", "Beard Trimmer", "Hair Trimmer", "Mini Trimmer",
-        "Vintage Clipper", "Power Clipper", "Metal Clipper", "Premium Clipper", "Cordless Clipper", "Barber Pro X",
-        "Titanium Clipper", "Gold Master", "Chrome Master", "Carbon Fiber Clipper", "Neon Clipper", "Cyber Trimmer",
-        "Turbo Clipper", "Ultimate Clipper", "Scissors", "Electric Shaver", "Hair Dryer", "Spray Bottle",
-        "Shaving Foam", "Comb", "Barber Brush"
+        "Hair Clipper", "Scissors", "Comb", "Spray Bottle", "Professional Clipper"
     )
     val barberDrawables = listOf(
-        R.drawable.barber_01, R.drawable.barber_02, R.drawable.barber_03, R.drawable.barber_04,
-        R.drawable.barber_05, R.drawable.barber_06, R.drawable.barber_07, R.drawable.barber_08,
-        R.drawable.barber_09, R.drawable.barber_10, R.drawable.barber_11, R.drawable.barber_12,
-        R.drawable.barber_13, R.drawable.barber_14, R.drawable.barber_15, R.drawable.barber_16,
-        R.drawable.barber_17, R.drawable.barber_18, R.drawable.barber_19, R.drawable.barber_20,
-        R.drawable.barber_21, R.drawable.barber_22, R.drawable.barber_23, R.drawable.barber_24,
-        R.drawable.barber_25, R.drawable.barber_26, R.drawable.barber_27
+        R.drawable.barber_01, R.drawable.barber_21, R.drawable.comb, R.drawable.barber_24, R.drawable.barber_02
     )
     barberNames.forEachIndexed { index, name ->
         val category = when {
             name == "Scissors" -> "Scissors"
-            name.contains("Shaver") || name.contains("Foam") -> "Shaving"
-            name == "Hair Dryer" || name == "Spray Bottle" || name == "Comb" || name == "Barber Brush" -> "Salon"
+            name == "Comb" -> "Comb"
+            name == "Spray Bottle" -> "Spray"
             else -> "Clippers"
         }
         val res = barberDrawables[index]
-        val num = String.format("%02d", index + 1)
-        add(SimItem(name, Section.Barber, category, res, "images/barber/barber_$num.webp"))
+        val asset = when (name) {
+            "Scissors" -> "images/barber/barber_21.webp"
+            "Comb" -> "images/barber/comb.webp"
+            "Spray Bottle" -> "images/barber/barber_24.webp"
+            "Professional Clipper" -> "images/barber/barber_02.webp"
+            else -> "images/barber/barber_01.webp"
+        }
+        add(SimItem(name, Section.Barber, category, res, asset))
     }
 }

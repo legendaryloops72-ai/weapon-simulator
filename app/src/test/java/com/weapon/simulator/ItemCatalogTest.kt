@@ -10,21 +10,20 @@ class ItemCatalogTest {
     @Test
     fun catalogContainsCoreSections() {
         assertTrue(
-            "The app must expose all three product sections",
-            Section.entries.containsAll(listOf(Section.Weapons, Section.Energy, Section.Barber))
+            "The app must expose weapons and barber sections only",
+            Section.entries.containsAll(listOf(Section.Weapons, Section.Barber))
         )
+        assertEquals("Energy section must be removed", 2, Section.entries.size)
     }
 
     @Test
     fun catalogItemCountsMatchRequirements() {
         val weapons = catalogItems.filter { it.section == Section.Weapons }
-        val energy = catalogItems.filter { it.section == Section.Energy }
         val barber = catalogItems.filter { it.section == Section.Barber }
 
         assertEquals("Weapons section must contain exactly 23 items", 23, weapons.size)
-        assertEquals("Energy Tools section must contain exactly 24 items", 24, energy.size)
-        assertEquals("Barber Tools section must contain exactly 27 items", 27, barber.size)
-        assertEquals("Total catalog must have exactly 74 items", 74, catalogItems.size)
+        assertEquals("Barber Tools section must contain exactly 5 items", 5, barber.size)
+        assertEquals("Total catalog must have exactly 28 items", 28, catalogItems.size)
     }
 
     @Test

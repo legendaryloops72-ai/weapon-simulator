@@ -14,12 +14,19 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.Image
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableFloatStateOf
@@ -27,7 +34,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.delay
 import com.weapon.simulator.audio.ItemSoundController
 import com.weapon.simulator.flash.FlashController
 import com.weapon.simulator.model.AccentCyan
@@ -93,6 +107,12 @@ private fun WeaponSimulatorApp() {
         mutableStateOf(prefs.getBoolean("external_flash", false))
     }
     var launchPulseId by remember { mutableIntStateOf(0) }
+    var showSplash by remember { mutableStateOf(true) }
+
+    LaunchedEffect(Unit) {
+        delay(1400)
+        showSplash = false
+    }
 
     fun triggerHaptic() {
         if (!vibration) return
@@ -163,14 +183,15 @@ private fun WeaponSimulatorApp() {
             color = ThemeDarkBg
         ) {
             Box(modifier = Modifier.fillMaxSize()) {
-                when (destination) {
+                if (showSplash) {
+                    SplashScreen()
+                } else when (destination) {
                     Destination.Home -> {
                         HomeScreen(
                             onNavigateSection = { sec ->
                                 selectedSection = sec
                                 destination = when (sec) {
                                     Section.Weapons -> Destination.Weapons
-                                    Section.Energy -> Destination.Energy
                                     Section.Barber -> Destination.Barber
                                 }
                             },
@@ -180,10 +201,9 @@ private fun WeaponSimulatorApp() {
                         )
                     }
 
-                    Destination.Weapons, Destination.Energy, Destination.Barber -> {
+                    Destination.Weapons, Destination.Barber -> {
                         val sec = selectedSection ?: when (destination) {
                             Destination.Weapons -> Section.Weapons
-                            Destination.Energy -> Section.Energy
                             else -> Section.Barber
                         }
                         CatalogScreen(
@@ -269,12 +289,40 @@ private fun WeaponSimulatorApp() {
                         PremiumScreen(onBack = { destination = Destination.Home })
                     }
                 }
-                LaunchFlashOverlay(
-                    pulseId = launchPulseId,
-                    enabled = screenFlash,
-                    strength = flashStrength
-                )
+                if (!showSplash) {
+                    LaunchFlashOverlay(
+                        pulseId = launchPulseId,
+                        enabled = screenFlash,
+                        strength = flashStrength
+                    )
+                }
             }
+        }
+    }
+}
+
+@Composable
+private fun SplashScreen() {
+    Surface(modifier = Modifier.fillMaxSize(), color = ThemeDarkBg) {
+        Column(
+            modifier = Modifier.fillMaxSize().padding(horizontal = 34.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = androidx.compose.foundation.layout.Arrangement.Center
+        ) {
+            Image(
+                painter = painterResource(R.drawable.splash_m4),
+                contentDescription = "M4 loading artwork",
+                modifier = Modifier.fillMaxSize(0.82f),
+                contentScale = ContentScale.Fit
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "LOADING ARMORY",
+                color = AccentRed,
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Black,
+                letterSpacing = 2.sp
+            )
         }
     }
 }

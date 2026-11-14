@@ -27,7 +27,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.Collections
 import androidx.compose.material.icons.filled.ContentCut
 import androidx.compose.material.icons.filled.Favorite
@@ -67,7 +66,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.weapon.simulator.R
-import com.weapon.simulator.model.AccentCyan
 import com.weapon.simulator.model.AccentGold
 import com.weapon.simulator.model.AccentPurple
 import com.weapon.simulator.model.AccentRed
@@ -111,10 +109,9 @@ fun HomeScreen(
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                // Three Primary Simulator Cards (Weapons, Energy, Barber)
-                HomeThreeCardsRow(
+                // Two primary simulator cards (Weapons and Barber)
+                HomeTwoCardsRow(
                     onWeaponsClick = { onNavigateSection(Section.Weapons) },
-                    onEnergyClick = { onNavigateSection(Section.Energy) },
                     onBarberClick = { onNavigateSection(Section.Barber) }
                 )
 
@@ -236,9 +233,8 @@ private fun HomeHeroHeader(
 }
 
 @Composable
-private fun HomeThreeCardsRow(
+private fun HomeTwoCardsRow(
     onWeaponsClick: () -> Unit,
-    onEnergyClick: () -> Unit,
     onBarberClick: () -> Unit
 ) {
     Row(
@@ -258,19 +254,7 @@ private fun HomeThreeCardsRow(
             onClick = onWeaponsClick
         )
 
-        // 2. Energy Tools Card (Cyan/Blue - slightly more prominent in the center)
-        InteractiveHeroCard(
-            drawableRes = R.drawable.card_energy_full,
-            contentDescription = "Energy Tools",
-            accentColor = AccentCyan,
-            modifier = Modifier
-                .weight(1.05f)
-                .shadow(elevation = 12.dp, shape = RoundedCornerShape(22.dp), spotColor = AccentCyan),
-            testTag = "card_energy",
-            onClick = onEnergyClick
-        )
-
-        // 3. Barber Simulator Card (Purple)
+        // 2. Barber Simulator Card (Purple)
         InteractiveHeroCard(
             drawableRes = R.drawable.card_barber_full,
             contentDescription = "Barber Simulator",
@@ -494,10 +478,7 @@ private fun MenuBottomSheetContent(
         DrawerItem("Weapons Simulator (30 Models)", Icons.Default.Shield, AccentRed) {
             onNavigateSection(Section.Weapons)
         }
-        DrawerItem("Energy Tools (24 Effects)", Icons.Default.Bolt, AccentCyan) {
-            onNavigateSection(Section.Energy)
-        }
-        DrawerItem("Barber Simulator (27 Tools)", Icons.Default.ContentCut, AccentPurple) {
+        DrawerItem("Barber Simulator (5 Tools)", Icons.Default.ContentCut, AccentPurple) {
             onNavigateSection(Section.Barber)
         }
         DrawerItem("Favorites", Icons.Default.Favorite, AccentRed) {

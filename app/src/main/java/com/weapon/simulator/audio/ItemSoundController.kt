@@ -14,12 +14,7 @@ class ItemSoundController(context: Context, catalog: List<SimItem>) {
 
     // Continuous motor/hum tools loop while pressed; one-shot burst items play once
     private val loopingItems = setOf(
-        "Hair Clipper", "Professional Clipper", "Classic Clipper", "Beard Trimmer", "Hair Trimmer",
-        "Mini Trimmer", "Vintage Clipper", "Power Clipper", "Metal Clipper", "Premium Clipper",
-        "Cordless Clipper", "Barber Pro X", "Titanium Clipper", "Gold Master", "Chrome Master",
-        "Carbon Fiber Clipper", "Neon Clipper", "Cyber Trimmer", "Turbo Clipper", "Ultimate Clipper",
-        "Electric Shaver", "Hair Dryer", "Tesla Rod", "Electric Fan", "Electric Gauntlet",
-        "Energy Vortex"
+        "Hair Clipper", "Professional Clipper"
     )
 
     // Exact 1-to-1 audio bindings. Every item is verified by audio content.
@@ -52,60 +47,12 @@ class ItemSoundController(context: Context, catalog: List<SimItem>) {
         "HDR" to R.raw.weapon_hdr,
         "AX50" to R.raw.weapon_ax50,
 
-        // --- ENERGY TOOLS (24 Items) ---
-        "Thunder Blade" to R.raw.energy_laser_thunder,
-        "Golden Scepter" to R.raw.energy_mixkit_2596,
-        "Void Staff" to R.raw.energy_mixkit_2599,
-        "Ice Scepter" to R.raw.energy_mixkit_2594,
-        "Crimson Mace" to R.raw.energy_mixkit_2595,
-        "Lightning Orb" to R.raw.energy_laser_swoosh,
-        "Electric Gauntlet" to R.raw.energy_mixkit_3201,
-        "Storm Spear" to R.raw.energy_electric_thunder,
-        "Tesla Rod" to R.raw.energy_mixkit_2603,
-        "Lightning Whip" to R.raw.energy_lightning_whip,
-        "Shadow Claw" to R.raw.energy_mixkit_2966,
-        "Holy Hammer" to R.raw.energy_lightning_blast,
-        "Crystal Staff" to R.raw.energy_mixkit_1453,
-        "Plasma Staff" to R.raw.energy_mixkit_2969,
-        "Dragon Staff" to R.raw.energy_mixkit_2597,
-        "Nature Lightning" to R.raw.energy_mixkit_1455,
-        "Chaos Staff" to R.raw.energy_mixkit_2614,
-        "Electric Fan" to R.raw.energy_mixkit_2646,
-        "Cosmic Staff" to R.raw.energy_mixkit_2967,
-        "Dual Lightning Blades" to R.raw.energy_mixkit_2340,
-        "Lightning Blaster" to R.raw.weapons_mixkit_1681,
-        "Energy Vortex" to R.raw.energy_mixkit_2968,
-        "Lightning Lance" to R.raw.energy_mixkit_2365,
-        "Thunder Tornado" to R.raw.energy_mixkit_1054,
-
-        // --- BARBER TOOLS (27 Items) ---
+        // --- BARBER TOOLS (5 Items) ---
         "Hair Clipper" to R.raw.barber_hair_clipper,
-        "Professional Clipper" to R.raw.barber_hair_clipper,
-        "Classic Clipper" to R.raw.barber_hair_clipper,
-        "Beard Trimmer" to R.raw.barber_hair_clipper,
-        "Hair Trimmer" to R.raw.barber_hair_clipper,
-        "Mini Trimmer" to R.raw.barber_hair_clipper,
-        "Vintage Clipper" to R.raw.barber_hair_clipper,
-        "Power Clipper" to R.raw.barber_hair_clipper,
-        "Metal Clipper" to R.raw.barber_hair_clipper,
-        "Premium Clipper" to R.raw.barber_hair_clipper,
-        "Cordless Clipper" to R.raw.barber_hair_clipper,
-        "Barber Pro X" to R.raw.barber_hair_clipper,
-        "Titanium Clipper" to R.raw.barber_hair_clipper,
-        "Gold Master" to R.raw.barber_hair_clipper,
-        "Chrome Master" to R.raw.barber_hair_clipper,
-        "Carbon Fiber Clipper" to R.raw.barber_hair_clipper,
-        "Neon Clipper" to R.raw.barber_hair_clipper,
-        "Cyber Trimmer" to R.raw.barber_hair_clipper,
-        "Turbo Clipper" to R.raw.barber_hair_clipper,
-        "Ultimate Clipper" to R.raw.barber_hair_clipper,
         "Scissors" to R.raw.barber_mixkit_2378,
-        "Electric Shaver" to R.raw.barber_electric_shaver,
-        "Hair Dryer" to R.raw.barber_mixkit_1894,
+        "Comb" to null,             // Non-mechanical styling tool is intentionally silent
         "Spray Bottle" to R.raw.barber_spray_bottle,
-        "Shaving Foam" to null,     // Aerosol foam authentic recording missing - left silent
-        "Comb" to null,             // Non-mechanical silent styling tool - left silent
-        "Barber Brush" to null      // Soft bristle brush - left silent
+        "Professional Clipper" to R.raw.barber_electric_shaver
     )
 
     init {

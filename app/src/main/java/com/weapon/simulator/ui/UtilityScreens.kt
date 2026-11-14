@@ -216,7 +216,7 @@ fun SettingsScreen(
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        text = "Offline SoundPool audio engine loaded with 50 high-fidelity sound effects.",
+                        text = "Offline SoundPool audio engine ready for weapons and five barber tools.",
                         color = TextMuted,
                         fontSize = 12.sp,
                         modifier = Modifier.padding(top = 4.dp)
