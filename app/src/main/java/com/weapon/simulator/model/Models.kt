@@ -68,25 +68,29 @@ val catalogItems: List<SimItem> = buildList {
     }
 
     val barberNames = listOf(
-        "Hair Clipper", "Scissors", "Comb", "Spray Bottle", "Professional Clipper"
+        "Hair Clipper", "Scissors", "Hair Dryer", "Spray Bottle", "Professional Clipper"
     )
     val barberDrawables = listOf(
-        R.drawable.barber_01, R.drawable.barber_21, R.drawable.comb, R.drawable.barber_24, R.drawable.barber_02
+        R.drawable.hair_clipper,
+        R.drawable.scissors,
+        R.drawable.hair_dryer,
+        R.drawable.spray_bottle,
+        R.drawable.professional_hair_clipper
     )
     barberNames.forEachIndexed { index, name ->
         val category = when {
             name == "Scissors" -> "Scissors"
-            name == "Comb" -> "Comb"
+            name == "Hair Dryer" -> "Hair Dryer"
             name == "Spray Bottle" -> "Spray"
             else -> "Clippers"
         }
         val res = barberDrawables[index]
         val asset = when (name) {
-            "Scissors" -> "images/barber/barber_21.webp"
-            "Comb" -> "images/barber/comb.webp"
-            "Spray Bottle" -> "images/barber/barber_24.webp"
-            "Professional Clipper" -> "images/barber/barber_02.webp"
-            else -> "images/barber/barber_01.webp"
+            "Scissors" -> "images/barber/scissors.png"
+            "Hair Dryer" -> "images/barber/hair_dryer.png"
+            "Spray Bottle" -> "images/barber/spray_bottle.png"
+            "Professional Clipper" -> "images/barber/professional_hair_clipper.png"
+            else -> "images/barber/hair_clipper.png"
         }
         add(SimItem(name, Section.Barber, category, res, asset))
     }

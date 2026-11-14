@@ -14,7 +14,7 @@ class ItemSoundController(context: Context, catalog: List<SimItem>) {
 
     // Continuous motor/hum tools loop while pressed; one-shot burst items play once
     private val loopingItems = setOf(
-        "Hair Clipper", "Professional Clipper"
+        "Hair Clipper", "Hair Dryer", "Professional Clipper"
     )
 
     // Exact 1-to-1 audio bindings. Every item is verified by audio content.
@@ -49,10 +49,10 @@ class ItemSoundController(context: Context, catalog: List<SimItem>) {
 
         // --- BARBER TOOLS (5 Items) ---
         "Hair Clipper" to R.raw.barber_hair_clipper,
-        "Scissors" to R.raw.barber_mixkit_2378,
-        "Comb" to null,             // Non-mechanical styling tool is intentionally silent
+        "Scissors" to R.raw.barber_scissors,
+        "Hair Dryer" to R.raw.barber_hair_dryer,
         "Spray Bottle" to R.raw.barber_spray_bottle,
-        "Professional Clipper" to R.raw.barber_electric_shaver
+        "Professional Clipper" to R.raw.barber_professional_clipper
     )
 
     init {

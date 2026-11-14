@@ -99,7 +99,7 @@ fun CatalogScreen(
 
     val categories = when (section) {
         Section.Weapons -> listOf("All", "Pistols", "Assault Rifles", "SMG", "Shotguns", "Snipers", "Special")
-        Section.Barber -> listOf("All", "Clippers", "Scissors", "Comb", "Spray")
+        Section.Barber -> listOf("All", "Clippers", "Scissors", "Hair Dryer", "Spray")
         null -> listOf("All")
     }
 
