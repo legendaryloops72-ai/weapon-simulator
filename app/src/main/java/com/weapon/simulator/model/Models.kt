@@ -13,7 +13,7 @@ val AccentGold = Color(0xFFFFB800)
 val TextMuted = Color(0xFF8F9FB5)
 
 enum class Section(val title: String, val subtitle: String) {
-    Weapons("Weapons", "30 REALISTIC WEAPONS"),
+    Weapons("Weapons", "23 VIDEO WEAPONS"),
     Energy("Energy Tools", "24 ELECTRIC EFFECTS"),
     Barber("Barber Tools", "27 PROFESSIONAL TOOLS")
 }
@@ -47,25 +47,14 @@ data class SimItem(
 
 val catalogItems: List<SimItem> = buildList {
     val weaponNames = listOf(
-        "AK-47" to "Assault Rifles", "M4A1" to "Assault Rifles", "Desert Eagle" to "Pistols",
-        "AWM Sniper" to "Snipers", "Shotgun" to "Shotguns", "Minigun" to "Special",
-        "Glock 19" to "Pistols", "Beretta 92" to "Pistols", "Revolver" to "Pistols",
-        "Uzi" to "SMG", "MP5" to "SMG", "P90" to "SMG", "Vector SMG" to "SMG",
-        "SCAR-L" to "Assault Rifles", "AUG A3" to "Assault Rifles", "FAMAS" to "Assault Rifles",
-        "G36" to "Assault Rifles", "M16" to "Assault Rifles", "Tactical Pistol" to "Pistols",
-        "USP Tactical" to "Pistols", "SPAS-12" to "Shotguns", "Pump Shotgun" to "Shotguns",
-        "Barrett M82" to "Snipers", "Dragunov SVD" to "Snipers", "Thompson" to "SMG",
-        "Kriss Vector" to "SMG", "Laser Gun" to "Special", "Plasma Rifle" to "Special",
-        "Energy Cannon" to "Special", "Neon Rifle" to "Special",
-        "Tactical Fixed-Stock Rifle" to "Assault Rifles", "M4-Style Assault Rifle" to "Assault Rifles",
-        "Tactical Bullpup Rifle" to "Assault Rifles", "Top-Optic Assault Rifle" to "Assault Rifles",
-        "Green Scoped Bullpup Rifle" to "Assault Rifles", "Wood AK Rifle" to "Assault Rifles",
-        "Scoped Bullpup Rifle" to "Assault Rifles", "Folding-Stock Assault Rifle" to "Assault Rifles",
-        "Classic Assault Rifle" to "Assault Rifles", "Compact Assault Rifle" to "Assault Rifles",
-        "Long-Barrel Automatic Rifle" to "Assault Rifles", "Bipod Light Machine Gun" to "LMG",
-        "Scoped Assault Rifle" to "Assault Rifles", "Bipod Automatic Rifle" to "LMG",
-        "Wood Rifle with Ported Barrel" to "Assault Rifles", "Wood-Stock Light Machine Gun" to "LMG",
-        "Folding-Stock Machine Gun" to "LMG"
+        "Glock" to "Pistols", "M1911" to "Pistols", "Sig P320" to "Pistols",
+        "Desert Eagle" to "Pistols", "Beretta M9" to "Pistols", "Makarov" to "Pistols",
+        "S&W Model 19" to "Pistols", "Browning Citori 725" to "Shotguns",
+        "Remington 870" to "Shotguns", "M26 MASS" to "Shotguns", "DP-12" to "Shotguns",
+        "Origin 12" to "Shotguns", "AA-12" to "Shotguns", "Mk 14 EBR" to "Assault Rifles",
+        "SKS" to "Assault Rifles", "FN FAL" to "Assault Rifles", "Dragunov" to "Snipers",
+        "Barrett" to "Snipers", "Marlin Model 336" to "Snipers", "Kar 98k" to "Snipers",
+        "R700" to "Snipers", "HDR" to "Snipers", "AX50" to "Snipers"
     )
     val weaponDrawables = listOf(
         R.drawable.weapon_01, R.drawable.weapon_02, R.drawable.weapon_03, R.drawable.weapon_04,
@@ -73,14 +62,7 @@ val catalogItems: List<SimItem> = buildList {
         R.drawable.weapon_09, R.drawable.weapon_10, R.drawable.weapon_11, R.drawable.weapon_12,
         R.drawable.weapon_13, R.drawable.weapon_14, R.drawable.weapon_15, R.drawable.weapon_16,
         R.drawable.weapon_17, R.drawable.weapon_18, R.drawable.weapon_19, R.drawable.weapon_20,
-        R.drawable.weapon_21, R.drawable.weapon_22, R.drawable.weapon_23, R.drawable.weapon_24,
-        R.drawable.weapon_25, R.drawable.weapon_26, R.drawable.weapon_27, R.drawable.weapon_28,
-        R.drawable.weapon_29, R.drawable.weapon_30,
-        R.drawable.weapon_31, R.drawable.weapon_32, R.drawable.weapon_33, R.drawable.weapon_34,
-        R.drawable.weapon_35, R.drawable.weapon_36, R.drawable.weapon_37, R.drawable.weapon_38,
-        R.drawable.weapon_39, R.drawable.weapon_40, R.drawable.weapon_41, R.drawable.weapon_42,
-        R.drawable.weapon_43, R.drawable.weapon_44, R.drawable.weapon_45, R.drawable.weapon_46,
-        R.drawable.weapon_47
+        R.drawable.weapon_21, R.drawable.weapon_22, R.drawable.weapon_23
     )
     weaponNames.forEachIndexed { index, (name, category) ->
         val res = weaponDrawables[index]

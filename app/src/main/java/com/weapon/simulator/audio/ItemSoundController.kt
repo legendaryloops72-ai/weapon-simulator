@@ -26,38 +26,31 @@ class ItemSoundController(context: Context, catalog: List<SimItem>) {
     // Items without an authentic matching recording are intentionally set to null (silent)
     // per instructions: "إذا لم تجد تسجيلاً مناسباً لعنصر معين اترك العنصر دون صوت مؤقتاً وأضفه إلى تقرير الأصوات الناقصة"
     val soundMap: Map<String, Int?> = mapOf(
-        // --- WEAPONS (47 Items) ---
-        // Exact clips extracted from the supplied 1000059476.mp4 compilation.
-        "AK-47" to R.raw.weapon_ak47,
-        "M4A1" to R.raw.weapon_m4a1,
-        "Desert Eagle" to R.raw.weapons_9mm_pistol,
-        "AWM Sniper" to R.raw.weapons_mixkit_1693,
-        "Shotgun" to R.raw.weapons_mixkit_1659,
-        "Minigun" to R.raw.weapons_mixkit_2777,
-        "Glock 19" to R.raw.weapons_mixkit_1662,
-        "Beretta 92" to R.raw.weapons_mixkit_1668,
-        "Revolver" to R.raw.weapons_mixkit_1674,
-        "Uzi" to R.raw.weapon_uzi,
-        "MP5" to R.raw.weapon_mp5,
-        "P90" to R.raw.weapon_p90,
-        "Vector SMG" to R.raw.weapons_mixkit_2784,
-        "SCAR-L" to R.raw.weapons_mixkit_2782,
-        "AUG A3" to R.raw.weapon_aug,
-        "FAMAS" to R.raw.weapon_famas,
-        "G36" to null,              // Authentic recording missing - left silent per policy
-        "M16" to R.raw.weapons_ak47_single,
-        "Tactical Pistol" to R.raw.weapons_mixkit_1666,
-        "USP Tactical" to R.raw.weapons_mixkit_1660,
-        "SPAS-12" to R.raw.weapons_mixkit_1665,
-        "Pump Shotgun" to R.raw.weapons_mixkit_1664,
-        "Barrett M82" to R.raw.weapons_mixkit_223,
-        "Dragunov SVD" to R.raw.weapons_mixkit_1678,
-        "Thompson" to null,         // Authentic recording missing - left silent per policy
-        "Kriss Vector" to R.raw.weapon_kriss_vector,
-        "Laser Gun" to R.raw.weapons_mixkit_1670,
-        "Plasma Rifle" to R.raw.weapons_mixkit_1679,
-        "Energy Cannon" to R.raw.energy_cannon_impact,
-        "Neon Rifle" to R.raw.weapons_mixkit_2783,
+        // --- WEAPONS (23 Items) ---
+        // Every weapon sound below is extracted from the supplied video and has a matching catalog image.
+        "Glock" to R.raw.weapon_glock,
+        "M1911" to R.raw.weapon_m1911,
+        "Sig P320" to R.raw.weapon_sig_p320,
+        "Desert Eagle" to R.raw.weapon_desert_eagle,
+        "Beretta M9" to R.raw.weapon_beretta_m9,
+        "Makarov" to R.raw.weapon_makarov,
+        "S&W Model 19" to R.raw.weapon_sw_model_19,
+        "Browning Citori 725" to R.raw.weapon_browning_citori_725,
+        "Remington 870" to R.raw.weapon_remington_870,
+        "M26 MASS" to R.raw.weapon_m26_mass,
+        "DP-12" to R.raw.weapon_dp12,
+        "Origin 12" to R.raw.weapon_origin_12,
+        "AA-12" to R.raw.weapon_aa12,
+        "Mk 14 EBR" to R.raw.weapon_mk14_ebr,
+        "SKS" to R.raw.weapon_sks,
+        "FN FAL" to R.raw.weapon_fn_fal,
+        "Dragunov" to R.raw.weapon_dragunov,
+        "Barrett" to R.raw.weapon_barrett,
+        "Marlin Model 336" to R.raw.weapon_marlin_model_336,
+        "Kar 98k" to R.raw.weapon_kar_98k,
+        "R700" to R.raw.weapon_r700,
+        "HDR" to R.raw.weapon_hdr,
+        "AX50" to R.raw.weapon_ax50,
 
         // --- ENERGY TOOLS (24 Items) ---
         "Thunder Blade" to R.raw.energy_laser_thunder,
@@ -151,7 +144,7 @@ class ItemSoundController(context: Context, catalog: List<SimItem>) {
 
     fun playRandomWeapon(): Int {
         val weaponResourceIds = soundMap.entries
-            .filter { (name, res) -> res != null && name in setOf("AK-47", "M4A1", "Desert Eagle", "Shotgun", "Minigun", "Glock 19") }
+            .filter { (name, res) -> res != null && name in setOf("Glock", "M1911", "Sig P320", "Desert Eagle", "Beretta M9", "Makarov", "S&W Model 19", "Browning Citori 725", "Remington 870", "M26 MASS", "DP-12", "Origin 12", "AA-12", "Mk 14 EBR", "SKS", "FN FAL", "Dragunov", "Barrett", "Marlin Model 336", "Kar 98k", "R700", "HDR", "AX50") }
             .mapNotNull { it.value }
         val availableSampleIds = weaponResourceIds.mapNotNull { sampleByResource[it] }.filter { it in loadedSamples }
         if (availableSampleIds.isEmpty()) return 0
