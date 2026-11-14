@@ -1,6 +1,9 @@
 package com.weapon.simulator
 
+import android.Manifest
+import android.app.Activity
 import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
@@ -18,6 +21,7 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,6 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import com.weapon.simulator.audio.ItemSoundController
+import com.weapon.simulator.flash.FlashController
 import com.weapon.simulator.model.AccentCyan
 import com.weapon.simulator.model.AccentRed
 import com.weapon.simulator.model.Destination
@@ -34,6 +39,7 @@ import com.weapon.simulator.model.catalogItems
 import com.weapon.simulator.ui.CatalogScreen
 import com.weapon.simulator.ui.GalleryScreen
 import com.weapon.simulator.ui.HomeScreen
+import com.weapon.simulator.ui.LaunchFlashOverlay
 import com.weapon.simulator.ui.MiniGamesScreen
 import com.weapon.simulator.ui.PremiumScreen
 import com.weapon.simulator.ui.SettingsScreen
@@ -56,8 +62,12 @@ private fun WeaponSimulatorApp() {
     val prefs = remember(context) { context.getSharedPreferences("weapon_sim_prefs", Context.MODE_PRIVATE) }
 
     val soundController = remember(context) { ItemSoundController(context, catalogItems) }
+    val flashController = remember(context) { FlashController(context) }
     DisposableEffect(soundController) {
-        onDispose { soundController.release() }
+        onDispose {
+            soundController.release()
+            flashController.release()
+        }
     }
 
     var destination by remember { mutableStateOf(Destination.Home) }
@@ -79,6 +89,10 @@ private fun WeaponSimulatorApp() {
     var flashStrength by remember {
         mutableFloatStateOf(prefs.getFloat("flash_strength", 0.65f))
     }
+    var externalFlash by remember {
+        mutableStateOf(prefs.getBoolean("external_flash", false))
+    }
+    var launchPulseId by remember { mutableIntStateOf(0) }
 
     fun triggerHaptic() {
         if (!vibration) return
@@ -104,6 +118,30 @@ private fun WeaponSimulatorApp() {
         favorites = next
         prefs.edit().putStringSet("favorites", next).apply()
         triggerHaptic()
+    }
+
+    fun requestCameraPermissionIfNeeded() {
+        val activity = context as? Activity ?: return
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+            context.checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED
+        ) {
+            activity.requestPermissions(arrayOf(Manifest.permission.CAMERA), 4101)
+        }
+    }
+
+    fun launchItem(item: com.weapon.simulator.model.SimItem) {
+        soundController.play(item)
+        triggerHaptic()
+        launchPulseId += 1
+        if (externalFlash) {
+            requestCameraPermissionIfNeeded()
+            flashController.pulse(enabled = true)
+        }
+    }
+
+    fun stopLaunch() {
+        soundController.stop()
+        flashController.stop()
     }
 
     BackHandler(destination != Destination.Home) {
@@ -155,6 +193,8 @@ private fun WeaponSimulatorApp() {
                             soundController = soundController,
                             onToggleFavorite = { toggleFavorite(it) },
                             onPerformHaptic = { triggerHaptic() },
+                            onLaunch = { launchItem(it) },
+                            onStopLaunch = { stopLaunch() },
                             onBack = {
                                 destination = Destination.Home
                                 selectedSection = null
@@ -170,6 +210,8 @@ private fun WeaponSimulatorApp() {
                             soundController = soundController,
                             onToggleFavorite = { toggleFavorite(it) },
                             onPerformHaptic = { triggerHaptic() },
+                            onLaunch = { launchItem(it) },
+                            onStopLaunch = { stopLaunch() },
                             onBack = { destination = Destination.Home }
                         )
                     }
@@ -196,6 +238,12 @@ private fun WeaponSimulatorApp() {
                                 flashStrength = it
                                 prefs.edit().putFloat("flash_strength", it).apply()
                             },
+                            externalFlash = externalFlash,
+                            onExternalFlashChange = {
+                                externalFlash = it
+                                prefs.edit().putBoolean("external_flash", it).apply()
+                                if (!it) flashController.stop()
+                            },
                             onBack = { destination = Destination.Home }
                         )
                     }
@@ -221,6 +269,11 @@ private fun WeaponSimulatorApp() {
                         PremiumScreen(onBack = { destination = Destination.Home })
                     }
                 }
+                LaunchFlashOverlay(
+                    pulseId = launchPulseId,
+                    enabled = screenFlash,
+                    strength = flashStrength
+                )
             }
         }
     }

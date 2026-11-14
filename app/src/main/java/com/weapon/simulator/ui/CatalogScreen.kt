@@ -69,6 +69,10 @@ import com.weapon.simulator.model.TextMuted
 import com.weapon.simulator.model.ThemeCardPanel
 import com.weapon.simulator.model.ThemeCardPanelRaised
 import com.weapon.simulator.model.ThemeDarkBg
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.coroutineScope
 
 @Composable
 fun CatalogScreen(
@@ -78,6 +82,8 @@ fun CatalogScreen(
     soundController: ItemSoundController,
     onToggleFavorite: (String) -> Unit,
     onPerformHaptic: () -> Unit,
+    onLaunch: (SimItem) -> Unit,
+    onStopLaunch: () -> Unit,
     onBack: () -> Unit
 ) {
     var selectedCategory by remember(section) { mutableStateOf("All") }
@@ -241,13 +247,13 @@ fun CatalogScreen(
                             onToggleFavorite = { onToggleFavorite(item.name) },
                             onPress = {
                                 activeItemName = item.name
-                                onPerformHaptic()
-                                soundController.play(item)
+                                onLaunch(item)
                             },
                             onRelease = {
-                                soundController.stop()
+                                onStopLaunch()
                                 activeItemName = null
-                            }
+                            },
+                            repeatOnHold = item.section == Section.Weapons
                         )
                     }
                 }
@@ -264,7 +270,8 @@ private fun CatalogItemCard(
     isActive: Boolean,
     onToggleFavorite: () -> Unit,
     onPress: () -> Unit,
-    onRelease: () -> Unit
+    onRelease: () -> Unit,
+    repeatOnHold: Boolean
 ) {
     val cardBgColor by animateColorAsState(
         targetValue = if (isActive) accent.copy(alpha = 0.25f) else ThemeCardPanel,
@@ -300,11 +307,22 @@ private fun CatalogItemCard(
                     )
                     .pointerInput(item.name) {
                         detectTapGestures(onPress = {
-                            onPress()
-                            try {
-                                awaitRelease()
-                            } finally {
-                                onRelease()
+                            coroutineScope {
+                                val firingJob = launch {
+                                    onPress()
+                                    if (repeatOnHold) {
+                                        while (isActive) {
+                                            delay(520)
+                                            onPress()
+                                        }
+                                    }
+                                }
+                                try {
+                                    awaitRelease()
+                                } finally {
+                                    firingJob.cancel()
+                                    onRelease()
+                                }
                             }
                         })
                     },
@@ -318,6 +336,15 @@ private fun CatalogItemCard(
                         .padding(6.dp),
                     contentScale = ContentScale.Fit
                 )
+
+                if (isActive) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(2.dp)
+                            .border(2.dp, Color.White.copy(alpha = 0.82f), RoundedCornerShape(14.dp))
+                    )
+                }
 
                 // Category Badge
                 Box(

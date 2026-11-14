@@ -19,7 +19,7 @@ class ItemSoundController(context: Context, catalog: List<SimItem>) {
         "Cordless Clipper", "Barber Pro X", "Titanium Clipper", "Gold Master", "Chrome Master",
         "Carbon Fiber Clipper", "Neon Clipper", "Cyber Trimmer", "Turbo Clipper", "Ultimate Clipper",
         "Electric Shaver", "Hair Dryer", "Tesla Rod", "Electric Fan", "Electric Gauntlet",
-        "Energy Vortex", "Minigun"
+        "Energy Vortex"
     )
 
     // Exact 1-to-1 audio bindings. Every item is verified by audio content.

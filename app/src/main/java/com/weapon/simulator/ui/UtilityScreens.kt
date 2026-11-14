@@ -95,6 +95,8 @@ fun SettingsScreen(
     onVibrationChange: (Boolean) -> Unit,
     flashStrength: Float,
     onFlashStrengthChange: (Float) -> Unit,
+    externalFlash: Boolean,
+    onExternalFlashChange: (Boolean) -> Unit,
     onBack: () -> Unit
 ) {
     Surface(
@@ -145,6 +147,16 @@ fun SettingsScreen(
                         icon = Icons.Default.Vibration,
                         checked = vibration,
                         onCheckedChange = onVibrationChange
+                    )
+
+                    HorizontalDivider(color = Color(0xFF1E2638), modifier = Modifier.padding(vertical = 10.dp))
+
+                    SettingToggleItem(
+                        title = "Camera LED Flash",
+                        description = "Uses the rear torch when the device supports it",
+                        icon = Icons.Default.FlashOn,
+                        checked = externalFlash,
+                        onCheckedChange = onExternalFlashChange
                     )
 
                     HorizontalDivider(color = Color(0xFF1E2638), modifier = Modifier.padding(vertical = 10.dp))
