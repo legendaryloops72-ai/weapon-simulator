@@ -11,6 +11,7 @@ class ItemSoundController(context: Context, catalog: List<SimItem>) {
     private val sampleByResource = mutableMapOf<Int, Int>()
     private val loadedSamples = mutableSetOf<Int>()
     private var activeStreamId = 0
+    private val playbackGain = 0.96f
 
     // Continuous motor/hum tools loop while pressed; one-shot burst items play once
     private val loopingItems = setOf(
@@ -23,36 +24,36 @@ class ItemSoundController(context: Context, catalog: List<SimItem>) {
     val soundMap: Map<String, Int?> = mapOf(
         // --- WEAPONS (23 Items) ---
         // Every weapon sound below is extracted from the supplied video and has a matching catalog image.
-        "Glock" to R.raw.weapon_glock,
-        "M1911" to R.raw.weapon_m1911,
-        "Sig P320" to R.raw.weapon_sig_p320,
-        "Desert Eagle" to R.raw.weapon_desert_eagle,
-        "Beretta M9" to R.raw.weapon_beretta_m9,
-        "Makarov" to R.raw.weapon_makarov,
-        "S&W Model 19" to R.raw.weapon_sw_model_19,
-        "Browning Citori 725" to R.raw.weapon_browning_citori_725,
-        "Remington 870" to R.raw.weapon_remington_870,
-        "M26 MASS" to R.raw.weapon_m26_mass,
-        "DP-12" to R.raw.weapon_dp12,
-        "Origin 12" to R.raw.weapon_origin_12,
-        "AA-12" to R.raw.weapon_aa12,
-        "Mk 14 EBR" to R.raw.weapon_mk14_ebr,
-        "SKS" to R.raw.weapon_sks,
-        "FN FAL" to R.raw.weapon_fn_fal,
-        "Dragunov" to R.raw.weapon_dragunov,
-        "Barrett" to R.raw.weapon_barrett,
-        "Marlin Model 336" to R.raw.weapon_marlin_model_336,
-        "Kar 98k" to R.raw.weapon_kar_98k,
-        "R700" to R.raw.weapon_r700,
-        "HDR" to R.raw.weapon_hdr,
-        "AX50" to R.raw.weapon_ax50,
+        "Glock" to R.raw.boosted_weapon_glock,
+        "M1911" to R.raw.boosted_weapon_m1911,
+        "Sig P320" to R.raw.boosted_weapon_sig_p320,
+        "Desert Eagle" to R.raw.boosted_weapon_desert_eagle,
+        "Beretta M9" to R.raw.boosted_weapon_beretta_m9,
+        "Makarov" to R.raw.boosted_weapon_makarov,
+        "S&W Model 19" to R.raw.boosted_weapon_sw_model_19,
+        "Browning Citori 725" to R.raw.boosted_weapon_browning_citori_725,
+        "Remington 870" to R.raw.boosted_weapon_remington_870,
+        "M26 MASS" to R.raw.boosted_weapon_m26_mass,
+        "DP-12" to R.raw.boosted_weapon_dp12,
+        "Origin 12" to R.raw.boosted_weapon_origin_12,
+        "AA-12" to R.raw.boosted_weapon_aa12,
+        "Mk 14 EBR" to R.raw.boosted_weapon_mk14_ebr,
+        "SKS" to R.raw.boosted_weapon_sks,
+        "FN FAL" to R.raw.boosted_weapon_fn_fal,
+        "Dragunov" to R.raw.boosted_weapon_dragunov,
+        "Barrett" to R.raw.boosted_weapon_barrett,
+        "Marlin Model 336" to R.raw.boosted_weapon_marlin_model_336,
+        "Kar 98k" to R.raw.boosted_weapon_kar_98k,
+        "R700" to R.raw.boosted_weapon_r700,
+        "HDR" to R.raw.boosted_weapon_hdr,
+        "AX50" to R.raw.boosted_weapon_ax50,
 
         // --- BARBER TOOLS (5 Items) ---
-        "Hair Clipper" to R.raw.barber_hair_clipper,
-        "Scissors" to R.raw.barber_scissors,
-        "Hair Dryer" to R.raw.barber_hair_dryer,
-        "Spray Bottle" to R.raw.barber_spray_bottle,
-        "Professional Clipper" to R.raw.barber_professional_clipper
+        "Hair Clipper" to R.raw.boosted_barber_hair_clipper,
+        "Scissors" to R.raw.boosted_barber_scissors,
+        "Hair Dryer" to R.raw.boosted_barber_hair_dryer,
+        "Spray Bottle" to R.raw.boosted_barber_spray_bottle,
+        "Professional Clipper" to R.raw.boosted_barber_professional_clipper
     )
 
     init {
@@ -62,7 +63,7 @@ class ItemSoundController(context: Context, catalog: List<SimItem>) {
             .build()
         soundPool = SoundPool.Builder()
             .setAudioAttributes(attributes)
-            .setMaxStreams(2)
+            .setMaxStreams(4)
             .build()
 
         soundPool.setOnLoadCompleteListener { _, sampleId, status ->
@@ -85,7 +86,7 @@ class ItemSoundController(context: Context, catalog: List<SimItem>) {
         val sampleId = sampleByResource[resourceId] ?: return 0
         if (sampleId == 0 || sampleId !in loadedSamples) return 0
         val loop = if (item.name in loopingItems) -1 else 0
-        activeStreamId = soundPool.play(sampleId, 1f, 1f, 1, loop, 1f)
+        activeStreamId = soundPool.play(sampleId, playbackGain, playbackGain, 1, loop, 1f)
         return activeStreamId
     }
 
@@ -96,7 +97,7 @@ class ItemSoundController(context: Context, catalog: List<SimItem>) {
         val availableSampleIds = weaponResourceIds.mapNotNull { sampleByResource[it] }.filter { it in loadedSamples }
         if (availableSampleIds.isEmpty()) return 0
         val sampleId = availableSampleIds.random()
-        return soundPool.play(sampleId, 1f, 1f, 1, 0, 1f)
+        return soundPool.play(sampleId, playbackGain, playbackGain, 1, 0, 1f)
     }
 
     fun stop(streamId: Int = activeStreamId) {

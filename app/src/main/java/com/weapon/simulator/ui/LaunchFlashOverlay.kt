@@ -17,7 +17,12 @@ import androidx.compose.ui.graphics.Color
 import kotlinx.coroutines.delay
 
 @Composable
-fun LaunchFlashOverlay(pulseId: Int, enabled: Boolean, strength: Float) {
+fun LaunchFlashOverlay(
+    pulseId: Int,
+    enabled: Boolean,
+    strength: Float,
+    color: Color = Color(0xFFFF163D)
+) {
     var visible by remember { mutableStateOf(false) }
 
     LaunchedEffect(pulseId) {
@@ -41,9 +46,9 @@ fun LaunchFlashOverlay(pulseId: Int, enabled: Boolean, strength: Float) {
                     Brush.verticalGradient(
                         colors = listOf(
                             Color.White.copy(alpha = alpha),
-                            Color(0xFFFF163D).copy(alpha = alpha * 0.86f),
+                            color.copy(alpha = alpha * 0.86f),
                             Color.White.copy(alpha = alpha * 0.72f),
-                            Color(0xFFFF163D).copy(alpha = alpha * 0.80f)
+                            color.copy(alpha = alpha * 0.80f)
                         )
                     )
                 )

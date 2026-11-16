@@ -31,7 +31,7 @@ class FlashController(context: Context) {
     val isSupported: Boolean
         get() = cameraManager != null && torchCameraId != null
 
-    fun pulse(enabled: Boolean, durationMs: Long = 70L) {
+    fun pulse(enabled: Boolean, durationMs: Long = 120L) {
         if (!enabled || !isSupported || !hasCameraPermission()) return
         val id = torchCameraId ?: return
         handler.removeCallbacksAndMessages(null)

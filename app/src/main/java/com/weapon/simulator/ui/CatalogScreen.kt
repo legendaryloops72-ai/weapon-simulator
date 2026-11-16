@@ -252,7 +252,7 @@ fun CatalogScreen(
                                 onStopLaunch()
                                 activeItemName = null
                             },
-                            repeatOnHold = item.section == Section.Weapons
+                            repeatOnHold = true
                         )
                     }
                 }
