@@ -1,5 +1,7 @@
 package com.weapon.simulator.ui
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -65,6 +67,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -99,6 +102,9 @@ fun SettingsScreen(
     onExternalFlashChange: (Boolean) -> Unit,
     onBack: () -> Unit
 ) {
+    val context = LocalContext.current
+    val privacyPolicyUrl = "https://weaponsimpri-zvtzakuf.manus.space"
+
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = ThemeDarkBg
@@ -220,6 +226,22 @@ fun SettingsScreen(
                         color = TextMuted,
                         fontSize = 12.sp,
                         modifier = Modifier.padding(top = 4.dp)
+                    )
+
+                    Text(
+                        text = "Privacy Policy / سياسة الخصوصية",
+                        color = AccentCyan,
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 14.dp)
+                            .clickable {
+                                context.startActivity(
+                                    Intent(Intent.ACTION_VIEW, Uri.parse(privacyPolicyUrl))
+                                )
+                            }
+                            .testTag("privacy_policy_link")
                     )
                 }
             }
