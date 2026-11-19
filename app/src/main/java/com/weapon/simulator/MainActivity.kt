@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.material3.MaterialTheme
@@ -341,12 +342,14 @@ private fun SplashScreen() {
     Surface(modifier = Modifier.fillMaxSize(), color = ThemeDarkBg) {
         Column(
             modifier = Modifier.fillMaxSize().padding(horizontal = 34.dp),
+            verticalArrangement = androidx.compose.foundation.layout.Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = androidx.compose.foundation.layout.Arrangement.Center
         ) {
             Box(
                 modifier = Modifier
-                    .fillMaxSize(0.82f)
+                    .weight(1f)
+                    .fillMaxWidth(0.82f)
+                    .widthIn(max = 520.dp)
                     .graphicsLayer(alpha = imageAlpha, scaleX = imageScale, scaleY = imageScale)
                     .background(
                         Brush.radialGradient(

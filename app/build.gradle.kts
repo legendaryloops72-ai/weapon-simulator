@@ -9,10 +9,10 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.weapon.simulator"
+        applicationId = "com.simulator.weaponbarber"
         minSdk = 24
         targetSdk = 36
-        versionCode = 1
+        versionCode = 3
         versionName = "0.1.0"
     }
 

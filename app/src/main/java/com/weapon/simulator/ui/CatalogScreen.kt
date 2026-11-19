@@ -8,6 +8,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -113,9 +115,14 @@ fun CatalogScreen(
         modifier = Modifier.fillMaxSize(),
         color = ThemeDarkBg
     ) {
+        BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+        val catalogCellMinimumWidth =
+            ResponsiveLayoutPolicy.catalogCellMinimumWidthDp(maxWidth.value.toInt()).dp
         Column(
             modifier = Modifier
+                .widthIn(max = ResponsiveLayoutPolicy.MaxContentWidthDp.dp)
                 .fillMaxSize()
+                .align(Alignment.TopCenter)
                 .statusBarsPadding()
         ) {
             // Top App Bar
@@ -231,7 +238,7 @@ fun CatalogScreen(
                 }
             } else {
                 LazyVerticalGrid(
-                    columns = GridCells.Adaptive(minSize = 140.dp),
+                    columns = GridCells.Adaptive(minSize = catalogCellMinimumWidth),
                     contentPadding = PaddingValues(start = 12.dp, end = 12.dp, bottom = 24.dp),
                     horizontalArrangement = Arrangement.spacedBy(10.dp),
                     verticalArrangement = Arrangement.spacedBy(10.dp),
@@ -257,6 +264,7 @@ fun CatalogScreen(
                     }
                 }
             }
+        }
         }
     }
 }

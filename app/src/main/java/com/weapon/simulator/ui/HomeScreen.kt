@@ -10,6 +10,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -22,6 +23,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -88,66 +90,92 @@ fun HomeScreen(
         modifier = Modifier.fillMaxSize(),
         color = ThemeDarkBg
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .statusBarsPadding()
-                .navigationBarsPadding()
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.SpaceBetween,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+        BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+            val wideLayout = ResponsiveLayoutPolicy.usesWideLayout(maxWidth.value.toInt())
             Column(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .widthIn(max = ResponsiveLayoutPolicy.MaxContentWidthDp.dp)
+                    .fillMaxSize()
+                    .align(Alignment.TopCenter)
+                    .statusBarsPadding()
+                    .navigationBarsPadding()
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.SpaceBetween,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Top Hero Header Banner matching user's reference mockup
-                HomeHeroHeader(
-                    onMenuClick = { showMenuSheet = true },
-                    onSettingsClick = { onNavigateDestination(Destination.Settings) }
-                )
-
-                Spacer(modifier = Modifier.height(10.dp))
-
-                // Two primary simulator cards (Weapons and Barber)
-                HomeTwoCardsRow(
-                    onWeaponsClick = { onNavigateSection(Section.Weapons) },
-                    onBarberClick = { onNavigateSection(Section.Barber) }
-                )
-
-                Spacer(modifier = Modifier.height(14.dp))
-
-                // Four Quick Access Utilities (Favorites, Mini Games, Gallery, Premium)
-                HomeQuickAccessRow(
-                    onFavoritesClick = { onNavigateDestination(Destination.Favorites) },
-                    onMiniGamesClick = { onNavigateDestination(Destination.MiniGames) },
-                    onGalleryClick = { onNavigateDestination(Destination.Gallery) },
-                    onPremiumClick = { onNavigateDestination(Destination.Premium) }
-                )
+                if (wideLayout) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
+                        horizontalArrangement = Arrangement.spacedBy(18.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(modifier = Modifier.weight(1.15f)) {
+                            HomeHeroHeader(
+                                onMenuClick = { showMenuSheet = true },
+                                onSettingsClick = { onNavigateDestination(Destination.Settings) },
+                                compactForWide = true
+                            )
+                            Spacer(modifier = Modifier.height(10.dp))
+                            HomeTwoCardsRow(
+                                onWeaponsClick = { onNavigateSection(Section.Weapons) },
+                                onBarberClick = { onNavigateSection(Section.Barber) }
+                            )
+                        }
+                        HomeQuickAccessRow(
+                            onFavoritesClick = { onNavigateDestination(Destination.Favorites) },
+                            onMiniGamesClick = { onNavigateDestination(Destination.MiniGames) },
+                            onGalleryClick = { onNavigateDestination(Destination.Gallery) },
+                            onPremiumClick = { onNavigateDestination(Destination.Premium) },
+                            wideLayout = true,
+                            modifier = Modifier.weight(0.85f)
+                        )
+                    }
+                    HomeBottomConsole(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp))
+                } else {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        HomeHeroHeader(
+                            onMenuClick = { showMenuSheet = true },
+                            onSettingsClick = { onNavigateDestination(Destination.Settings) }
+                        )
+                        Spacer(modifier = Modifier.height(10.dp))
+                        HomeTwoCardsRow(
+                            onWeaponsClick = { onNavigateSection(Section.Weapons) },
+                            onBarberClick = { onNavigateSection(Section.Barber) }
+                        )
+                        Spacer(modifier = Modifier.height(14.dp))
+                        HomeQuickAccessRow(
+                            onFavoritesClick = { onNavigateDestination(Destination.Favorites) },
+                            onMiniGamesClick = { onNavigateDestination(Destination.MiniGames) },
+                            onGalleryClick = { onNavigateDestination(Destination.Gallery) },
+                            onPremiumClick = { onNavigateDestination(Destination.Premium) }
+                        )
+                    }
+                    HomeBottomConsole(modifier = Modifier.fillMaxWidth().padding(top = 10.dp))
+                }
             }
 
-            // Bottom Futuristic Sci-Fi Console Chassis
-            HomeBottomConsole(modifier = Modifier.fillMaxWidth().padding(top = 10.dp))
-        }
-
-        if (showMenuSheet) {
-            val sheetState = rememberModalBottomSheetState()
-            ModalBottomSheet(
-                onDismissRequest = { showMenuSheet = false },
-                sheetState = sheetState,
-                containerColor = Color(0xFF0F1524),
-                contentColor = Color.White
-            ) {
-                MenuBottomSheetContent(
-                    onNavigateSection = {
-                        showMenuSheet = false
-                        onNavigateSection(it)
-                    },
-                    onNavigateDestination = {
-                        showMenuSheet = false
-                        onNavigateDestination(it)
-                    }
-                )
+            if (showMenuSheet) {
+                val sheetState = rememberModalBottomSheetState()
+                ModalBottomSheet(
+                    onDismissRequest = { showMenuSheet = false },
+                    sheetState = sheetState,
+                    containerColor = Color(0xFF0F1524),
+                    contentColor = Color.White
+                ) {
+                    MenuBottomSheetContent(
+                        onNavigateSection = {
+                            showMenuSheet = false
+                            onNavigateSection(it)
+                        },
+                        onNavigateDestination = {
+                            showMenuSheet = false
+                            onNavigateDestination(it)
+                        }
+                    )
+                }
             }
         }
     }
@@ -156,13 +184,16 @@ fun HomeScreen(
 @Composable
 private fun HomeHeroHeader(
     onMenuClick: () -> Unit,
-    onSettingsClick: () -> Unit
+    onSettingsClick: () -> Unit,
+    compactForWide: Boolean = false
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .aspectRatio(1152f / 510f)
-    ) {
+    BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+        val headerModifier = if (compactForWide) {
+            Modifier.fillMaxWidth().height((maxWidth / (1152f / 510f)).coerceAtMost(260.dp))
+        } else {
+            Modifier.fillMaxWidth().aspectRatio(1152f / 510f)
+        }
+        Box(modifier = headerModifier) {
         Image(
             painter = painterResource(R.drawable.home_hero_header),
             contentDescription = "Weapon & Barber Simulator Header",
@@ -228,6 +259,7 @@ private fun HomeHeroHeader(
                     )
                 }
             }
+        }
         }
     }
 }
@@ -309,59 +341,73 @@ private fun HomeQuickAccessRow(
     onFavoritesClick: () -> Unit,
     onMiniGamesClick: () -> Unit,
     onGalleryClick: () -> Unit,
-    onPremiumClick: () -> Unit
+    onPremiumClick: () -> Unit,
+    wideLayout: Boolean = false,
+    modifier: Modifier = Modifier
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 10.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        // 1. Favorites Button
-        QuickAccessTile(
-            label = "Favorites",
-            icon = Icons.Default.Star,
-            iconTint = Color(0xFFA575FF),
-            borderColor = Color(0xFF2E3D60),
-            modifier = Modifier.weight(1f),
-            testTag = "quick_favorites",
-            onClick = onFavoritesClick
-        )
-
-        // 2. Mini Games Button
-        QuickAccessTile(
-            label = "Mini Games",
-            icon = Icons.Default.SportsEsports,
-            iconTint = Color(0xFF8AA5FF),
-            borderColor = Color(0xFF2E3D60),
-            modifier = Modifier.weight(1.05f),
-            testTag = "quick_minigames",
-            onClick = onMiniGamesClick
-        )
-
-        // 3. Gallery Button
-        QuickAccessTile(
-            label = "Gallery",
-            icon = Icons.Default.Collections,
-            iconTint = Color(0xFF55C7FF),
-            borderColor = Color(0xFF2E3D60),
-            modifier = Modifier.weight(1f),
-            testTag = "quick_gallery",
-            onClick = onGalleryClick
-        )
-
-        // 4. Premium Button (Glowing Gold Border with Crown)
-        QuickAccessTile(
-            label = "Premium",
-            icon = Icons.Default.WorkspacePremium,
-            iconTint = AccentGold,
-            borderColor = AccentGold,
-            isGlowing = true,
-            modifier = Modifier.weight(1.05f),
-            testTag = "quick_premium",
-            onClick = onPremiumClick
-        )
+    if (wideLayout) {
+        Column(
+            modifier = modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                QuickAccessTile(
+                    label = "Favorites", icon = Icons.Default.Star,
+                    iconTint = Color(0xFFA575FF), borderColor = Color(0xFF2E3D60),
+                    modifier = Modifier.weight(1f), testTag = "quick_favorites", onClick = onFavoritesClick
+                )
+                QuickAccessTile(
+                    label = "Mini Games", icon = Icons.Default.SportsEsports,
+                    iconTint = Color(0xFF8AA5FF), borderColor = Color(0xFF2E3D60),
+                    modifier = Modifier.weight(1f), testTag = "quick_minigames", onClick = onMiniGamesClick
+                )
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                QuickAccessTile(
+                    label = "Gallery", icon = Icons.Default.Collections,
+                    iconTint = Color(0xFF55C7FF), borderColor = Color(0xFF2E3D60),
+                    modifier = Modifier.weight(1f), testTag = "quick_gallery", onClick = onGalleryClick
+                )
+                QuickAccessTile(
+                    label = "Premium", icon = Icons.Default.WorkspacePremium,
+                    iconTint = AccentGold, borderColor = AccentGold, isGlowing = true,
+                    modifier = Modifier.weight(1f), testTag = "quick_premium", onClick = onPremiumClick
+                )
+            }
+        }
+    } else {
+        Row(
+            modifier = modifier.fillMaxWidth().padding(horizontal = 10.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            QuickAccessTile(
+                label = "Favorites", icon = Icons.Default.Star,
+                iconTint = Color(0xFFA575FF), borderColor = Color(0xFF2E3D60),
+                modifier = Modifier.weight(1f), testTag = "quick_favorites", onClick = onFavoritesClick
+            )
+            QuickAccessTile(
+                label = "Mini Games", icon = Icons.Default.SportsEsports,
+                iconTint = Color(0xFF8AA5FF), borderColor = Color(0xFF2E3D60),
+                modifier = Modifier.weight(1.05f), testTag = "quick_minigames", onClick = onMiniGamesClick
+            )
+            QuickAccessTile(
+                label = "Gallery", icon = Icons.Default.Collections,
+                iconTint = Color(0xFF55C7FF), borderColor = Color(0xFF2E3D60),
+                modifier = Modifier.weight(1f), testTag = "quick_gallery", onClick = onGalleryClick
+            )
+            QuickAccessTile(
+                label = "Premium", icon = Icons.Default.WorkspacePremium,
+                iconTint = AccentGold, borderColor = AccentGold, isGlowing = true,
+                modifier = Modifier.weight(1.05f), testTag = "quick_premium", onClick = onPremiumClick
+            )
+        }
     }
 }
 

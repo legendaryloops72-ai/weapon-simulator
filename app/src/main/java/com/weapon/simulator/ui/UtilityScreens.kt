@@ -11,11 +11,13 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,9 +25,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items as lazyItems
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -109,9 +114,12 @@ fun SettingsScreen(
         modifier = Modifier.fillMaxSize(),
         color = ThemeDarkBg
     ) {
+        BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
+                .widthIn(max = ResponsiveLayoutPolicy.MaxSingleColumnWidthDp.dp)
                 .fillMaxSize()
+                .align(Alignment.TopCenter)
                 .statusBarsPadding()
                 .padding(horizontal = 16.dp)
                 .verticalScroll(rememberScrollState())
@@ -248,6 +256,7 @@ fun SettingsScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
         }
+        }
     }
 }
 
@@ -310,127 +319,201 @@ fun MiniGamesScreen(
         modifier = Modifier.fillMaxSize(),
         color = ThemeDarkBg
     ) {
-        Column(
-            modifier = Modifier
+        BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+            val wideLayout = ResponsiveLayoutPolicy.usesWideLayout(maxWidth.value.toInt())
+            val contentModifier = Modifier
+                .widthIn(max = ResponsiveLayoutPolicy.MaxContentWidthDp.dp)
                 .fillMaxSize()
+                .align(Alignment.TopCenter)
                 .statusBarsPadding()
                 .padding(horizontal = 16.dp)
-        ) {
-            UtilityTopBar(title = "Mini Games", subtitle = "TACTICAL REFLEX TARGETS", accent = Color(0xFF8AA5FF), onBack = onBack)
 
-            Spacer(modifier = Modifier.height(14.dp))
-
-            // Score Banner
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(18.dp))
-                    .background(ThemeCardPanel)
-                    .border(1.dp, Color(0xFF263352), RoundedCornerShape(18.dp))
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceAround,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text("TARGET SCORE", color = TextMuted, fontSize = 10.sp, fontWeight = FontWeight.Bold)
-                    Text("$score", color = AccentGold, fontSize = 28.sp, fontWeight = FontWeight.Black)
+            if (wideLayout) {
+                Row(
+                    modifier = contentModifier.padding(vertical = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(20.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .weight(0.9f)
+                            .fillMaxHeight()
+                            .verticalScroll(rememberScrollState()),
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        UtilityTopBar(title = "Mini Games", subtitle = "TACTICAL REFLEX TARGETS", accent = Color(0xFF8AA5FF), onBack = onBack)
+                        Spacer(modifier = Modifier.height(14.dp))
+                        MiniGameScoreBanner(score = score, streak = streak)
+                        Spacer(modifier = Modifier.height(14.dp))
+                        Text(
+                            text = "TAP THE ACTIVE GLOWING TARGET TO FIRE",
+                            color = Color.White,
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+                        ResetGameButton(modifier = Modifier.align(Alignment.CenterHorizontally)) {
+                            score = 0
+                            streak = 0
+                            targetIndex = Random.nextInt(0, 9)
+                        }
+                    }
+                    MiniGameTargetGrid(
+                        targetIndex = targetIndex,
+                        onHit = {
+                            score += 10
+                            streak += 1
+                            onPerformHaptic()
+                            soundController.playRandomWeapon()
+                            targetIndex = Random.nextInt(0, 9)
+                        },
+                        onMiss = { streak = 0 },
+                        modifier = Modifier
+                            .weight(1.1f)
+                            .widthIn(max = 480.dp)
+                            .aspectRatio(1f)
+                    )
                 }
-                Box(modifier = Modifier.width(1.dp).height(36.dp).background(Color(0xFF263352)))
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text("HIT STREAK", color = TextMuted, fontSize = 10.sp, fontWeight = FontWeight.Bold)
-                    Text("$streak", color = AccentCyan, fontSize = 28.sp, fontWeight = FontWeight.Black)
+            } else {
+                Column(
+                    modifier = contentModifier.verticalScroll(rememberScrollState())
+                ) {
+                    UtilityTopBar(title = "Mini Games", subtitle = "TACTICAL REFLEX TARGETS", accent = Color(0xFF8AA5FF), onBack = onBack)
+                    Spacer(modifier = Modifier.height(14.dp))
+                    MiniGameScoreBanner(score = score, streak = streak)
+                    Spacer(modifier = Modifier.height(18.dp))
+                    Text(
+                        text = "TAP THE ACTIVE GLOWING TARGET TO FIRE",
+                        color = Color.White,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(modifier = Modifier.height(14.dp))
+                    MiniGameTargetGrid(
+                        targetIndex = targetIndex,
+                        onHit = {
+                            score += 10
+                            streak += 1
+                            onPerformHaptic()
+                            soundController.playRandomWeapon()
+                            targetIndex = Random.nextInt(0, 9)
+                        },
+                        onMiss = { streak = 0 },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .widthIn(max = 420.dp)
+                            .align(Alignment.CenterHorizontally)
+                            .aspectRatio(1f)
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    ResetGameButton(modifier = Modifier.align(Alignment.CenterHorizontally)) {
+                        score = 0
+                        streak = 0
+                        targetIndex = Random.nextInt(0, 9)
+                    }
+                    Spacer(modifier = Modifier.height(12.dp))
                 }
             }
+        }
+    }
+}
 
-            Spacer(modifier = Modifier.height(18.dp))
-            Text(
-                text = "TAP THE ACTIVE GLOWING TARGET TO FIRE",
-                color = Color.White,
-                fontSize = 11.sp,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(modifier = Modifier.height(14.dp))
+@Composable
+private fun MiniGameScoreBanner(score: Int, streak: Int) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(18.dp))
+            .background(ThemeCardPanel)
+            .border(1.dp, Color(0xFF263352), RoundedCornerShape(18.dp))
+            .padding(16.dp),
+        horizontalArrangement = Arrangement.SpaceAround,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text("TARGET SCORE", color = TextMuted, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+            Text("$score", color = AccentGold, fontSize = 28.sp, fontWeight = FontWeight.Black)
+        }
+        Box(modifier = Modifier.width(1.dp).height(36.dp).background(Color(0xFF263352)))
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text("HIT STREAK", color = TextMuted, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+            Text("$streak", color = AccentCyan, fontSize = 28.sp, fontWeight = FontWeight.Black)
+        }
+    }
+}
 
-            // 3x3 Target Grid
-            Column(
+@Composable
+private fun MiniGameTargetGrid(
+    targetIndex: Int,
+    onHit: () -> Unit,
+    onMiss: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        for (row in 0..2) {
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                for (row in 0..2) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                for (col in 0..2) {
+                    val index = row * 3 + col
+                    val isActive = index == targetIndex
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .aspectRatio(1f)
+                            .clip(RoundedCornerShape(18.dp))
+                            .background(
+                                if (isActive) Brush.radialGradient(listOf(AccentRed.copy(alpha = 0.4f), ThemeCardPanel))
+                                else Brush.radialGradient(listOf(ThemeCardPanelRaised, ThemeCardPanel))
+                            )
+                            .border(
+                                width = if (isActive) 2.dp else 1.dp,
+                                color = if (isActive) AccentRed else Color(0xFF1E2840),
+                                shape = RoundedCornerShape(18.dp)
+                            )
+                            .clickable { if (isActive) onHit() else onMiss() },
+                        contentAlignment = Alignment.Center
                     ) {
-                        for (col in 0..2) {
-                            val index = row * 3 + col
-                            val isActive = index == targetIndex
+                        if (isActive) {
+                            Icon(
+                                imageVector = Icons.Default.Bolt,
+                                contentDescription = "Active Target",
+                                tint = AccentRed,
+                                modifier = Modifier.size(36.dp)
+                            )
+                        } else {
                             Box(
                                 modifier = Modifier
-                                    .weight(1f)
-                                    .aspectRatio(1f)
-                                    .clip(RoundedCornerShape(18.dp))
-                                    .background(
-                                        if (isActive) Brush.radialGradient(listOf(AccentRed.copy(alpha = 0.4f), ThemeCardPanel))
-                                        else Brush.radialGradient(listOf(ThemeCardPanelRaised, ThemeCardPanel))
-                                    )
-                                    .border(
-                                        width = if (isActive) 2.dp else 1.dp,
-                                        color = if (isActive) AccentRed else Color(0xFF1E2840),
-                                        shape = RoundedCornerShape(18.dp)
-                                    )
-                                    .clickable {
-                                        if (isActive) {
-                                            score += 10
-                                            streak += 1
-                                            onPerformHaptic()
-                                            soundController.playRandomWeapon()
-                                            targetIndex = Random.nextInt(0, 9)
-                                        } else {
-                                            streak = 0
-                                        }
-                                    },
-                                contentAlignment = Alignment.Center
-                            ) {
-                                if (isActive) {
-                                    Icon(
-                                        imageVector = Icons.Default.Bolt,
-                                        contentDescription = "Active Target",
-                                        tint = AccentRed,
-                                        modifier = Modifier.size(36.dp)
-                                    )
-                                } else {
-                                    Box(
-                                        modifier = Modifier
-                                            .size(10.dp)
-                                            .clip(CircleShape)
-                                            .background(Color(0xFF2A3654))
-                                    )
-                                }
-                            }
+                                    .size(10.dp)
+                                    .clip(CircleShape)
+                                    .background(Color(0xFF2A3654))
+                            )
                         }
                     }
                 }
             }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Button(
-                onClick = {
-                    score = 0
-                    streak = 0
-                    targetIndex = Random.nextInt(0, 9)
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = ThemeCardPanelRaised),
-                shape = RoundedCornerShape(14.dp),
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            ) {
-                Icon(Icons.Default.Refresh, contentDescription = null, tint = AccentCyan, modifier = Modifier.size(18.dp))
-                Spacer(modifier = Modifier.width(8.dp))
-                Text("Reset Game", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
-            }
         }
+    }
+}
+
+@Composable
+private fun ResetGameButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
+    Button(
+        onClick = onClick,
+        colors = ButtonDefaults.buttonColors(containerColor = ThemeCardPanelRaised),
+        shape = RoundedCornerShape(14.dp),
+        modifier = modifier
+            .padding(top = 4.dp)
+            .widthIn(min = 148.dp)
+    ) {
+        Icon(Icons.Default.Refresh, contentDescription = null, tint = AccentCyan, modifier = Modifier.size(18.dp))
+        Spacer(modifier = Modifier.width(8.dp))
+        Text("Reset Game", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
     }
 }
 
@@ -443,14 +526,23 @@ fun GalleryScreen(
 ) {
     var selectedSection by remember { mutableStateOf<Section?>(null) }
     val displayedItems = if (selectedSection == null) items else items.filter { it.section == selectedSection }
+    val filterSections: List<Section?> = buildList {
+        add(null)
+        Section.entries.forEach { add(it) }
+    }
 
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = ThemeDarkBg
     ) {
+        BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+        val galleryCellMinimumWidth =
+            ResponsiveLayoutPolicy.galleryCellMinimumWidthDp(maxWidth.value.toInt()).dp
         Column(
             modifier = Modifier
+                .widthIn(max = ResponsiveLayoutPolicy.MaxContentWidthDp.dp)
                 .fillMaxSize()
+                .align(Alignment.TopCenter)
                 .statusBarsPadding()
         ) {
             UtilityTopBar(
@@ -462,28 +554,26 @@ fun GalleryScreen(
             )
 
             // Section Filter Tabs
-            Row(
+            LazyRow(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 10.dp),
+                    .padding(vertical = 10.dp),
+                contentPadding = PaddingValues(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                FilterChip(
-                    selected = selectedSection == null,
-                    onClick = { selectedSection = null },
-                    label = { Text("All (81)", fontSize = 11.sp) },
-                    colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = AccentCyan.copy(alpha = 0.2f),
-                        selectedLabelColor = Color.White
-                    )
-                )
-                Section.entries.forEach { sec ->
+                lazyItems(filterSections) { sec ->
+                    val filterColor = sec?.tint ?: AccentCyan
                     FilterChip(
                         selected = selectedSection == sec,
                         onClick = { selectedSection = sec },
-                        label = { Text("${sec.title} (${items.count { it.section == sec }})", fontSize = 11.sp) },
+                        label = {
+                            Text(
+                                text = if (sec == null) "All (81)" else "${sec.title} (${items.count { it.section == sec }})",
+                                fontSize = 11.sp
+                            )
+                        },
                         colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = sec.tint.copy(alpha = 0.2f),
+                            selectedContainerColor = filterColor.copy(alpha = 0.2f),
                             selectedLabelColor = Color.White
                         )
                     )
@@ -491,7 +581,7 @@ fun GalleryScreen(
             }
 
             LazyVerticalGrid(
-                columns = GridCells.Adaptive(minSize = 110.dp),
+                columns = GridCells.Adaptive(minSize = galleryCellMinimumWidth),
                 contentPadding = PaddingValues(start = 12.dp, end = 12.dp, bottom = 24.dp),
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp),
@@ -543,6 +633,7 @@ fun GalleryScreen(
                 }
             }
         }
+        }
     }
 }
 
@@ -552,9 +643,12 @@ fun PremiumScreen(onBack: () -> Unit) {
         modifier = Modifier.fillMaxSize(),
         color = ThemeDarkBg
     ) {
+        BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
+                .widthIn(max = ResponsiveLayoutPolicy.MaxSingleColumnWidthDp.dp)
                 .fillMaxSize()
+                .align(Alignment.TopCenter)
                 .statusBarsPadding()
                 .padding(horizontal = 16.dp)
                 .verticalScroll(rememberScrollState())
@@ -616,6 +710,7 @@ fun PremiumScreen(onBack: () -> Unit) {
                     }
                 }
             }
+        }
         }
     }
 }
